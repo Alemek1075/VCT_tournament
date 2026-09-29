@@ -14,7 +14,7 @@ if (Environment.GetEnvironmentVariable("PORT") is { Length: > 0 } port)
     builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 builder.Services.AddDbContext<AppDbContext>(o =>
-    o.UseNpgsql(DbConnection.Build(config), npg => npg.EnableRetryOnFailure(3)));
+    o.UseNpgsql(DbConnection.Build(config, builder.Environment), npg => npg.EnableRetryOnFailure(3)));
 builder.Services.AddScoped<Seeder>();
 
 if (!string.IsNullOrEmpty(config["SUPABASE_SECRET_KEY"]))

@@ -26,16 +26,18 @@ public static class DbConnection
 {
     /// <summary>
     /// ConnectionStrings:Default wins. Otherwise, if SUPABASE_DB_PASSWORD is set, connect to Supabase
-    /// through the IPv4 session pooler (Render has no IPv6).
+    /// through the IPv4 session pooler (Render has no IPv6). Local dev stays on the docker database
+    /// unless USE_SUPABASE=true, so tests never write into production.
     /// </summary>
-    public static string Build(IConfiguration config)
+    public static string Build(IConfiguration config, IHostEnvironment env)
     {
         var explicitCs = config.GetConnectionString("Default");
         if (!string.IsNullOrWhiteSpace(explicitCs)) return explicitCs;
 
         var password = config["SUPABASE_DB_PASSWORD"];
         var reference = config["SUPABASE_PROJECT_REF"];
-        if (!string.IsNullOrWhiteSpace(password) && !string.IsNullOrWhiteSpace(reference))
+        var useSupabase = !env.IsDevelopment() || config["USE_SUPABASE"] == "true";
+        if (useSupabase && !string.IsNullOrWhiteSpace(password) && !string.IsNullOrWhiteSpace(reference))
             return new NpgsqlConnectionStringBuilder
             {
                 Host = config["SUPABASE_POOLER_HOST"] ?? "aws-1-eu-central-1.pooler.supabase.com",
