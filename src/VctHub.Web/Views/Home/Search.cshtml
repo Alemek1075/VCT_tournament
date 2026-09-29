@@ -36,6 +36,7 @@
         const url = `/api/search?q=${encodeURIComponent(q)}&limit=30${$type.value ? '&type=' + $type.value : ''}`;
         const r = await fetch(url, { signal: ctrl.signal }).then(r => r.json()).catch(() => null);
         if (!r) return;
+        track('search', { search_term: q, results: r.total, engine: r.engine });
         $meta.textContent = `${r.total} results · ${r.tookMs} ms · engine: ${r.engine}`;
         $res.innerHTML = r.hits.length ? r.hits.map(h => `
             <a class="d-flex align-items-center gap-3 p-3 border-bottom" href="${esc(h.url)}">

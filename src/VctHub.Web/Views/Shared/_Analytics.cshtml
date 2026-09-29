@@ -1,0 +1,23 @@
+@inject IConfiguration Config
+@{ var gaId = Config["GA_MEASUREMENT_ID"]; }
+@if (!string.IsNullOrWhiteSpace(gaId))
+{
+    <script async src="https://www.googletagmanager.com/gtag/js?id=@gaId"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', '@gaId');
+    </script>
+}
+<script>
+    // C9: custom events. Without GA configured they only go to the console, so nothing breaks.
+    window.track = (name, params = {}) => {
+        if (typeof gtag === 'function') gtag('event', name, params);
+        else console.debug('[analytics]', name, params);
+    };
+    document.addEventListener('click', e => {
+        const el = e.target.closest('[data-track]');
+        if (el) track(el.dataset.track, { label: el.dataset.trackLabel || el.textContent.trim().slice(0, 60) });
+    });
+</script>

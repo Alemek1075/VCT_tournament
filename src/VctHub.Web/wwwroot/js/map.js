@@ -29,7 +29,7 @@
         const m = L.marker([t.lat, t.lng], { icon, title: t.name });
         m.team = t;
         m.bindPopup(() => teamPopup(t), { minWidth: 260 });
-        m.on('popupopen', () => { drawRecordChart(t); drawTravel(t); });
+        m.on('popupopen', () => { drawRecordChart(t); drawTravel(t); window.track?.('map_team_open', { team: t.tag }); });
         m.on('popupclose', () => travelLayer.clearLayers());
         return m;
     });
@@ -140,6 +140,7 @@
 
     document.querySelectorAll('#region-filter .chip').forEach(b => b.addEventListener('click', () => {
         b.classList.toggle('on');
+        window.track?.('map_filter', { region: b.dataset.region, on: b.classList.contains('on') });
         b.classList.contains('on') ? state.regions.add(b.dataset.region) : state.regions.delete(b.dataset.region);
         apply();
     }));
