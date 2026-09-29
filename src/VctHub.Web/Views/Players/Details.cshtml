@@ -32,6 +32,17 @@
         }
     </div>
 
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <h2 class="h4">Form across the season</h2>
+            <div class="panel p-3"><canvas id="trend" height="220" aria-label="Rating and ACS per event"></canvas></div>
+        </div>
+        <div class="col-lg-5">
+            <h2 class="h4">vs average @(Model.Role ?? "player")</h2>
+            <div class="panel p-3"><canvas id="radar" height="220" aria-label="Comparison with role average"></canvas></div>
+        </div>
+    </div>
+
     <h2 class="h4">By event</h2>
     <div class="table-responsive">
         <table class="table">
@@ -53,3 +64,51 @@
         </table>
     </div>
 </div>
+
+@section Scripts {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+(async () => {
+    Chart.defaults.color = '#8b978f';
+    Chart.defaults.borderColor = '#2a3a49';
+    Chart.defaults.font.family = 'Barlow';
+    const [stats, roles] = await Promise.all([
+        fetch('/api/players/@Model.Id/stats').then(r => r.json()),
+        fetch('/api/players/roles').then(r => r.json()),
+    ]);
+    const short = n => n.replace('VCT 2026: ', '').replace('Valorant ', '').replace(' 2026', '');
+
+    new Chart(document.getElementById('trend'), {
+        data: {
+            labels: stats.map(s => short(s.tournament)),
+            datasets: [
+                { type: 'line', label: 'Rating', data: stats.map(s => s.rating), yAxisID: 'r', borderColor: '#ff4655', backgroundColor: '#ff4655', tension: .3, pointRadius: 5 },
+                { type: 'bar', label: 'ACS', data: stats.map(s => s.acs), yAxisID: 'a', backgroundColor: 'rgba(63,209,180,.35)' },
+            ],
+        },
+        options: {
+            interaction: { mode: 'index', intersect: false },
+            scales: { r: { position: 'left', suggestedMin: .7, suggestedMax: 1.4, title: { display: true, text: 'Rating' } },
+                      a: { position: 'right', grid: { display: false }, suggestedMin: 150, title: { display: true, text: 'ACS' } } },
+        },
+    });
+
+    const avg = roles.find(r => r.role === '@Model.Role');
+    if (!avg) { document.getElementById('radar').replaceWith('Not enough data for this role.'); return; }
+    // each axis scaled against the role average, so 100 = typical @(Model.Role)
+    const me = { rating: @Model.Rating.ToString(System.Globalization.CultureInfo.InvariantCulture), acs: @Model.Acs, kd: @Model.Kd.ToString(System.Globalization.CultureInfo.InvariantCulture), adr: @Model.Adr.ToString(System.Globalization.CultureInfo.InvariantCulture), kast: @Model.Kast, hs: @Model.Hs };
+    const keys = ['rating', 'acs', 'kd', 'adr', 'kast', 'hs'];
+    new Chart(document.getElementById('radar'), {
+        type: 'radar',
+        data: {
+            labels: ['Rating', 'ACS', 'K:D', 'ADR', 'KAST', 'HS%'],
+            datasets: [
+                { label: '@Html.Raw(System.Web.HttpUtility.JavaScriptStringEncode(Model.Nickname))', data: keys.map(k => Math.round(100 * me[k] / avg[k])), borderColor: '#ff4655', backgroundColor: 'rgba(255,70,85,.25)' },
+                { label: `Avg ${avg.role} (${avg.players})`, data: keys.map(() => 100), borderColor: '#8b978f', backgroundColor: 'transparent', borderDash: [4, 4], pointRadius: 0 },
+            ],
+        },
+        options: { scales: { r: { suggestedMin: 60, suggestedMax: 130, angleLines: { color: '#2a3a49' }, grid: { color: '#2a3a49' }, pointLabels: { color: '#ece8e1', font: { family: 'Barlow Condensed', size: 13, weight: 600 } }, ticks: { display: false } } } },
+    });
+})();
+</script>
+}

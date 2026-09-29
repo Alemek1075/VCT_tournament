@@ -48,6 +48,20 @@ public class PlayersApiController(AppDbContext db) : ApiBase
         return Ok(rows);
     }
 
+    /// <summary>Average stat line per role (players with 200+ rounds), for comparison charts.</summary>
+    [HttpGet("roles")]
+    public async Task<IActionResult> RoleAverages() =>
+        Ok(await db.Players.AsNoTracking().Where(p => p.Rounds >= 200 && p.Role != null)
+            .GroupBy(p => p.Role)
+            .Select(g => new
+            {
+                Role = g.Key, Players = g.Count(),
+                Rating = Math.Round(g.Average(p => p.Rating), 2), Acs = Math.Round(g.Average(p => p.Acs)),
+                Kd = Math.Round(g.Average(p => p.Kd), 2), Adr = Math.Round(g.Average(p => p.Adr), 1),
+                Kast = Math.Round(g.Average(p => p.Kast)), Hs = Math.Round(g.Average(p => p.Hs)),
+            })
+            .ToListAsync());
+
     [HttpPost]
     [ProducesResponseType<PlayerDto>(201), ProducesResponseType(400)]
     public async Task<IActionResult> Create(PlayerInput input)
