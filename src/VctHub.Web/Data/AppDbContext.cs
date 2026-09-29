@@ -12,6 +12,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Tournament> Tournaments => Set<Tournament>();
     public DbSet<Match> Matches => Set<Match>();
     public DbSet<RankedAccount> RankedAccounts => Set<RankedAccount>();
+    public DbSet<TelegramSubscription> TelegramSubscriptions => Set<TelegramSubscription>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -54,6 +55,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.HasOne(m => m.TeamB).WithMany().HasForeignKey(m => m.TeamBId).OnDelete(DeleteBehavior.Restrict);
             e.Property(m => m.Status).HasConversion<string>().HasMaxLength(12);
             e.HasIndex(m => m.ScheduledAt);
+        });
+
+        b.Entity<TelegramSubscription>(e =>
+        {
+            e.HasIndex(x => new { x.ChatId, x.TeamId }).IsUnique();
+            e.HasOne(x => x.Team).WithMany().OnDelete(DeleteBehavior.Cascade);
         });
 
         b.Entity<RankedAccount>(e =>

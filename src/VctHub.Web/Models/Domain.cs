@@ -206,3 +206,13 @@ public class RankedAccount
     [StringLength(20)] public string Rank { get; set; } = "";
     [StringLength(20)] public string Region { get; set; } = "";
 }
+
+/// <summary>A Telegram chat that wants alerts about a team (B2).</summary>
+public class TelegramSubscription
+{
+    public int Id { get; set; }
+    public long ChatId { get; set; }
+    public int TeamId { get; set; }
+    public Team? Team { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
