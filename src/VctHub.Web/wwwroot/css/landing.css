@@ -1,0 +1,88 @@
+/* Team landing page (C6) */
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+body { padding-bottom: 64px; } /* room for the fixed contact bar */
+
+.landing-hero {
+    padding: 3.5rem 0 3rem;
+    border-bottom: 1px solid var(--line);
+    background:
+        linear-gradient(180deg, transparent 60%, var(--ink)),
+        radial-gradient(ellipse at 15% 40%, rgba(255, 70, 85, .22), transparent 55%),
+        repeating-linear-gradient(135deg, transparent 0 22px, rgba(255, 255, 255, .02) 22px 23px);
+}
+.landing-hero-grid { display: grid; grid-template-columns: 220px 1fr; gap: 2.5rem; align-items: center; }
+.landing-logo { width: 220px; height: 220px; object-fit: contain; filter: drop-shadow(0 12px 30px rgba(0, 0, 0, .5)); }
+.landing-hero .kicker { color: var(--red); font-family: "Barlow Condensed"; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; margin: 0 0 .4rem; }
+.landing-hero h1 { font-size: clamp(2.8rem, 7vw, 5.5rem); margin: 0; }
+.landing-sub { color: var(--muted); font-size: 1.15rem; margin: .4rem 0 1.5rem; }
+
+.landing-numbers { display: flex; flex-wrap: wrap; gap: 0; margin: 0; border: 1px solid var(--line); width: fit-content; }
+.landing-numbers > div { padding: .7rem 1.4rem; border-right: 1px solid var(--line); }
+.landing-numbers > div:last-child { border-right: 0; }
+.landing-numbers dt { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 500; }
+.landing-numbers dd { margin: 0; font-family: "Barlow Condensed"; font-weight: 800; font-size: 2rem; line-height: 1.1; }
+.landing-numbers dd span { color: var(--muted); padding: 0 .1em; }
+.form-dots { display: flex; gap: 4px; padding-top: .35rem; }
+.form-dots i { font-style: normal; font-size: .85rem; width: 24px; height: 24px; display: grid; place-items: center; }
+.form-dots .w { background: var(--teal); color: var(--ink); }
+.form-dots .l { background: var(--ink-3); color: var(--muted); }
+
+.landing-body { display: grid; grid-template-columns: 170px 1fr; gap: 3rem; padding-top: 2rem; }
+.landing-nav { position: sticky; top: 90px; align-self: start; display: flex; flex-direction: column; border-left: 1px solid var(--line); }
+.landing-nav .nav-link { color: var(--muted); padding: .4rem 1rem; font-family: "Barlow Condensed"; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; border-left: 2px solid transparent; margin-left: -1px; }
+.landing-nav .nav-link:hover { color: var(--paper); }
+.landing-nav .nav-link.active { color: var(--paper); border-left-color: var(--red); }
+
+.landing-section { padding: 1rem 0 3rem; }
+.landing-section h2 { font-size: 2rem; margin-bottom: 1.2rem; }
+.landing-about { font-size: 1.15rem; line-height: 1.6; max-width: 65ch; color: #cfcac2; }
+
+.roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1rem; }
+.roster-card { background: var(--ink-2); border: 1px solid var(--line); color: var(--paper); transition: transform .2s, border-color .2s; display: block; }
+.roster-card:hover { transform: translateY(-4px); border-color: var(--red); color: var(--paper); }
+.roster-photo { position: relative; aspect-ratio: 1; overflow: hidden; background: linear-gradient(160deg, var(--ink-3), var(--ink)); }
+.roster-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.roster-role { position: absolute; left: 0; bottom: 0; background: var(--red); color: #fff; font-family: "Barlow Condensed"; font-weight: 700; text-transform: uppercase; font-size: .8rem; padding: .15rem .6rem; }
+.roster-name { font-family: "Barlow Condensed"; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; padding: .6rem .8rem 0; line-height: 1; }
+.roster-name small { color: var(--gold); font-size: .9rem; }
+.roster-real { color: var(--muted); font-size: .85rem; padding: .1rem .8rem .6rem; }
+.roster-stats { display: flex; border-top: 1px solid var(--line); }
+.roster-stats span { flex: 1; text-align: center; padding: .45rem 0; font-size: .7rem; color: var(--muted); border-right: 1px solid var(--line); }
+.roster-stats span:last-child { border-right: 0; }
+.roster-stats b { display: block; color: var(--paper); font-size: 1rem; font-family: "Barlow Condensed"; }
+
+.next-match { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.5rem 2rem; background: var(--ink-2); border: 1px solid var(--line); border-left: 3px solid var(--red); color: var(--paper); }
+.next-match:hover { color: var(--paper); background: var(--ink-3); }
+.next-match img { object-fit: contain; }
+
+.results-list { list-style: none; padding: 0; margin: 0; border: 1px solid var(--line); }
+.results-list a { display: flex; align-items: center; gap: .9rem; padding: .6rem 1rem; border-bottom: 1px solid var(--line); color: var(--paper); }
+.results-list li:last-child a { border-bottom: 0; }
+.results-list a:hover { background: var(--ink-3); color: var(--paper); }
+.results-list .res { width: 26px; height: 26px; display: grid; place-items: center; font-weight: 700; font-family: "Barlow Condensed"; }
+.results-list .res.w { background: var(--teal); color: var(--ink); }
+.results-list .res.l { background: var(--ink-3); color: var(--muted); }
+.results-list .score { font-family: "Barlow Condensed"; font-weight: 800; font-size: 1.3rem; width: 2.6rem; }
+.results-list img { object-fit: contain; }
+
+.region-strip { display: flex; flex-wrap: wrap; gap: .6rem; }
+.region-strip a { padding: .6rem; background: var(--ink-2); border: 1px solid var(--line); transition: border-color .15s; }
+.region-strip a:hover { border-color: var(--red); }
+.region-strip img { object-fit: contain; display: block; }
+
+.contact-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1030; background: rgba(11, 19, 27, .94); backdrop-filter: blur(8px); border-top: 1px solid var(--line); padding: .55rem 0; }
+.contact-bar img { object-fit: contain; }
+.btn-sm { padding: .3rem .8rem; font-size: .9rem; }
+
+@media (max-width: 860px) {
+    .landing-hero-grid { grid-template-columns: 1fr; text-align: center; gap: 1rem; }
+    .landing-logo { width: 140px; height: 140px; margin: 0 auto; }
+    .landing-numbers { margin: 0 auto; }
+    .landing-body { grid-template-columns: 1fr; }
+    .landing-nav { display: none; }
+    .contact-bar strong { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .roster-card, .team-card { transition: none; }
+}

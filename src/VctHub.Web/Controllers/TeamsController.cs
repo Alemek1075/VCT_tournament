@@ -36,7 +36,10 @@ public class TeamsController(AppDbContext db, IFileStorage storage) : Controller
             .Where(m => m.TeamAId == team.Id || m.TeamBId == team.Id)
             .OrderByDescending(m => m.ScheduledAt)
             .ToListAsync();
-        return View("Details", new TeamPageVm(team, matches));
+        var others = await db.Teams.AsNoTracking()
+            .Where(t => t.RegionId == team.RegionId && t.Id != team.Id)
+            .OrderBy(t => t.Name).ToListAsync();
+        return View("Details", new TeamPageVm(team, matches, others));
     }
 
     public async Task<IActionResult> Details(int id)
@@ -135,4 +138,24 @@ public class TeamsController(AppDbContext db, IFileStorage storage) : Controller
         ViewBag.Regions = new SelectList(await db.Regions.OrderBy(r => r.Id).ToListAsync(), nameof(Region.Id), nameof(Region.Name));
 }
 
-public record TeamPageVm(Team Team, List<Match> Matches);
+public record TeamPageVm(Team Team, List<Match> Matches, List<Team> RegionTeams)
+{
+    public IEnumerable<Match> Played => Matches.Where(m => m.Status == MatchStatus.Completed);
+    public bool Won(Match m) => m.TeamAId == Team.Id ? m.ScoreA > m.ScoreB : m.ScoreB > m.ScoreA;
+    public int Wins => Played.Count(Won);
+    public int Losses => Played.Count() - Wins;
+    public int MapsWon => Played.Sum(m => m.TeamAId == Team.Id ? m.ScoreA : m.ScoreB);
+    public int MapsLost => Played.Sum(m => m.TeamAId == Team.Id ? m.ScoreB : m.ScoreA);
+    public Match? Next => Matches.Where(m => m.Status != MatchStatus.Completed).MinBy(m => m.ScheduledAt);
+    public List<bool> Form => Played.OrderByDescending(m => m.ScheduledAt).Take(5).Select(Won).ToList();
+    public decimal AvgRating => Team.Players.Where(p => p.Rounds > 0).Select(p => p.Rating).DefaultIfEmpty().Average();
+    public Team? Opponent(Match m) => m.TeamAId == Team.Id ? m.TeamB : m.TeamA;
+
+    /// <summary>Written from the numbers when nobody filled in a description.</summary>
+    public string About => !string.IsNullOrWhiteSpace(Team.Description) ? Team.Description :
+        $"{Team.Name} ({Team.Tag}) is {(Team.Region?.Name is ['A' or 'E' or 'I' or 'O' or 'U', ..] ? "an" : "a")} {Team.Region?.Name} partner team" +
+        (Team.City is null ? "" : $" based in {Team.City}") +
+        $". In the 2026 VCT season they have played {Played.Count()} series, going {Wins}–{Losses} with a {MapsWon}–{MapsLost} map record." +
+        (Team.Players.OrderByDescending(p => p.Rating).FirstOrDefault(p => p.Rounds > 200) is { } star
+            ? $" Their highest-rated player is {star.Nickname} ({star.Role}, {star.Rating} rating)." : "");
+}

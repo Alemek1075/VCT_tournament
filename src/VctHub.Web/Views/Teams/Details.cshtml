@@ -1,38 +1,192 @@
 @model TeamPageVm
 @{
     var t = Model.Team;
-    ViewData["Title"] = t.Name;
+    var baseUrl = $"{Context.Request.Scheme}://{Context.Request.Host}";
+    var canonical = $"{baseUrl}/team/{t.Slug}";
+    var logo = t.LogoUrl is null ? null : t.LogoUrl.StartsWith("http") ? t.LogoUrl : baseUrl + t.LogoUrl;
+    ViewData["Title"] = $"{t.Name} ({t.Tag}) — roster, results and stats";
+    ViewData["Description"] = Model.About.Length > 155 ? Model.About[..152].TrimEnd() + "…" : Model.About;
+    var roster = t.Players.OrderByDescending(p => p.Rating).ToList();
+    var sameAs = new[] { t.Website, t.Twitter }.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+    var jsonLd = System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, object?>
+    {
+        ["@context"] = "https://schema.org",
+        ["@type"] = "SportsTeam",
+        ["name"] = t.Name,
+        ["alternateName"] = t.Tag,
+        ["sport"] = "VALORANT",
+        ["url"] = canonical,
+        ["logo"] = logo,
+        ["description"] = Model.About,
+        ["location"] = t.City is null ? null : new Dictionary<string, string> { ["@type"] = "Place", ["name"] = $"{t.City}, {t.Country}" },
+        ["memberOf"] = new Dictionary<string, string> { ["@type"] = "SportsOrganization", ["name"] = $"VCT {t.Region?.Name}" },
+        ["athlete"] = roster.Select(p => new Dictionary<string, string?>
+            { ["@type"] = "Person", ["name"] = p.Nickname, ["alternateName"] = p.RealName, ["url"] = $"{baseUrl}/Players/Details/{p.Id}" }),
+        ["sameAs"] = sameAs,
+    });
 }
-<div class="container-xl">
-    <div class="page-head d-flex flex-wrap gap-4 align-items-center">
-        <img src="@t.LogoUrl" alt="@t.Name logo" style="width:120px;height:120px;object-fit:contain" />
-        <div class="me-auto">
-            <div class="kicker">@t.Region?.Name · @t.Country</div>
-            <h1>@t.Name</h1>
-            <div class="muted">@t.Tag @(t.City is null ? "" : $"· {t.City}")</div>
-        </div>
-        <div class="d-flex gap-2">
-            <a class="btn btn-ghost" asp-action="Edit" asp-route-id="@t.Id">Edit</a>
-            <a class="btn btn-ghost" asp-controller="Players" asp-action="Create" asp-route-teamId="@t.Id">+ Player</a>
-        </div>
-    </div>
+@section Meta {
+    <link rel="canonical" href="@canonical" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="VCT Hub" />
+    <meta property="og:title" content="@t.Name — VCT 2026" />
+    <meta property="og:description" content="@ViewData["Description"]" />
+    <meta property="og:url" content="@canonical" />
+    @if (logo != null) { <meta property="og:image" content="@logo" /> }
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="@t.Name — VCT 2026" />
+    <meta name="twitter:description" content="@ViewData["Description"]" />
+    @Html.Raw($"<script type=\"application/ld+json\">{jsonLd}</script>")
+}
+@section Head { <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" /> }
 
-    <h2 class="h4">Roster</h2>
-    <div class="row g-3 mb-4">
-        @foreach (var p in t.Players)
-        {
-            <div class="col-6 col-md-4 col-lg">
-                <a class="team-card flex-column text-center" asp-controller="Players" asp-action="Details" asp-route-id="@p.Id">
-                    <img src="@(p.PhotoUrl ?? t.LogoUrl)" alt="@p.Nickname" style="width:100%;aspect-ratio:1;object-fit:cover" loading="lazy" />
-                    <div class="name">@p.Nickname</div>
-                    <div class="muted small">@p.Role · @p.Rating</div>
-                </a>
+<div data-bs-spy="scroll" data-bs-target="#landing-nav" data-bs-offset="120" tabindex="0" class="landing">
+    <!-- 1. hero -->
+    <header id="overview" class="landing-hero">
+        <div class="container-xl">
+            <div class="landing-hero-grid">
+                <img class="landing-logo" src="@t.LogoUrl" alt="@t.Name logo" width="220" height="220" fetchpriority="high" />
+                <div>
+                    <p class="kicker">@t.Region?.Name · VCT 2026 partner team</p>
+                    <h1>@t.Name</h1>
+                    <p class="landing-sub">@t.Tag @if (t.City != null) { <text>· @t.City, @t.Country</text> }</p>
+                    <dl class="landing-numbers">
+                        <div><dt>Series</dt><dd>@Model.Wins<span>–</span>@Model.Losses</dd></div>
+                        <div><dt>Maps</dt><dd>@Model.MapsWon<span>–</span>@Model.MapsLost</dd></div>
+                        <div><dt>Avg rating</dt><dd>@Model.AvgRating.ToString("0.00")</dd></div>
+                        <div>
+                            <dt>Last 5</dt>
+                            <dd class="form-dots">
+                                @foreach (var w in Model.Form) { <i class="@(w ? "w" : "l")" title="@(w ? "Win" : "Loss")">@(w ? "W" : "L")</i> }
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
             </div>
-        }
-    </div>
+        </div>
+    </header>
 
-    <h2 class="h4">Matches</h2>
-    <div class="panel">
-        @foreach (var m in Model.Matches) { <partial name="_MatchRow" model="m" /> }
+    <div class="container-xl landing-body">
+        <nav id="landing-nav" class="landing-nav" aria-label="On this page">
+            <a class="nav-link" href="#overview">Overview</a>
+            <a class="nav-link" href="#about">About</a>
+            <a class="nav-link" href="#roster">Roster</a>
+            @if (Model.Next != null) { <a class="nav-link" href="#next">Next match</a> }
+            <a class="nav-link" href="#results">Results</a>
+            <a class="nav-link" href="#region">Region</a>
+        </nav>
+
+        <div class="landing-main">
+            <!-- 2. about -->
+            <section id="about" class="landing-section">
+                <h2>About @t.Name</h2>
+                <p class="landing-about">@Model.About</p>
+            </section>
+
+            <!-- 3. roster -->
+            <section id="roster" class="landing-section">
+                <h2>Roster</h2>
+                <div class="roster-grid">
+                    @foreach (var p in roster)
+                    {
+                        <a class="roster-card" asp-controller="Players" asp-action="Details" asp-route-id="@p.Id">
+                            <div class="roster-photo">
+                                <img src="@(p.PhotoUrl ?? t.LogoUrl)" alt="@p.Nickname, @p.Role for @t.Name" loading="lazy" width="300" height="300" />
+                                <span class="roster-role">@p.Role</span>
+                            </div>
+                            <div class="roster-name">@p.Nickname @if (p.IsCaptain) { <small title="Captain">★</small> }</div>
+                            <div class="roster-real">@p.RealName</div>
+                            <div class="roster-stats">
+                                <span><b>@p.Rating</b>RTG</span>
+                                <span><b>@p.Acs</b>ACS</span>
+                                <span><b>@p.Kd</b>K:D</span>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </section>
+
+            <!-- 4. next match -->
+            @if (Model.Next is { } next)
+            {
+                var opp = Model.Opponent(next);
+                <section id="next" class="landing-section">
+                    <h2>Next match</h2>
+                    <a class="next-match" asp-controller="Matches" asp-action="Details" asp-route-id="@next.Id">
+                        <img src="@t.LogoUrl" alt="" width="72" height="72" />
+                        <div class="text-center">
+                            <div class="muted small">@next.Tournament?.Name · @next.Series</div>
+                            <div class="display fs-2 fw-bold">@t.Tag <span class="muted">vs</span> @opp?.Tag</div>
+                            <time datetime="@next.ScheduledAt.ToString("o")" class="local-time">@next.ScheduledAt.ToString("ddd MMM d, HH:mm") UTC</time>
+                        </div>
+                        <img src="@opp?.LogoUrl" alt="" width="72" height="72" />
+                    </a>
+                </section>
+            }
+
+            <!-- 5. results -->
+            <section id="results" class="landing-section">
+                <h2>2026 results</h2>
+                <ol class="results-list">
+                    @foreach (var m in Model.Played.OrderByDescending(m => m.ScheduledAt))
+                    {
+                        var opp = Model.Opponent(m);
+                        var won = Model.Won(m);
+                        var us = m.TeamAId == t.Id ? m.ScoreA : m.ScoreB;
+                        var them = m.TeamAId == t.Id ? m.ScoreB : m.ScoreA;
+                        <li>
+                            <a asp-controller="Matches" asp-action="Details" asp-route-id="@m.Id">
+                                <span class="res @(won ? "w" : "l")">@(won ? "W" : "L")</span>
+                                <span class="score">@us–@them</span>
+                                <img src="@opp?.LogoUrl" alt="" width="24" height="24" loading="lazy" />
+                                <span class="opp">@opp?.Name</span>
+                                <span class="muted ms-auto text-end small">@m.Tournament?.Name<br />@m.ScheduledAt.ToString("MMM d")</span>
+                            </a>
+                        </li>
+                    }
+                </ol>
+            </section>
+
+            <!-- 6. region -->
+            <section id="region" class="landing-section">
+                <h2>Other teams in @t.Region?.Name</h2>
+                <div class="region-strip">
+                    @foreach (var o in Model.RegionTeams)
+                    {
+                        <a href="/team/@o.Slug" title="@o.Name"><img src="@o.LogoUrl" alt="@o.Name" width="48" height="48" loading="lazy" /></a>
+                    }
+                </div>
+            </section>
+
+            <p class="text-end"><a class="muted small" asp-action="Edit" asp-route-id="@t.Id">Edit team</a></p>
+        </div>
     </div>
 </div>
+
+<!-- contacts: fixed, always on screen -->
+<aside class="contact-bar" aria-label="Contacts">
+    <div class="container-xl d-flex align-items-center gap-3 flex-wrap">
+        <img src="@t.LogoUrl" alt="" width="28" height="28" />
+        <strong class="display">@t.Name</strong>
+        <span class="ms-auto d-flex gap-2 flex-wrap">
+            @if (!string.IsNullOrEmpty(t.Website)) { <a class="btn btn-ghost btn-sm" href="@t.Website" rel="noopener nofollow" target="_blank">Website</a> }
+            @if (!string.IsNullOrEmpty(t.Twitter)) { <a class="btn btn-ghost btn-sm" href="@t.Twitter" rel="noopener nofollow" target="_blank">X / Twitter</a> }
+            <a class="btn btn-ghost btn-sm" href="https://t.me/vct_schedule_bot?start=team_@t.Id" rel="noopener" target="_blank">Telegram alerts</a>
+            <button class="btn btn-red btn-sm" type="button" id="share">Share</button>
+        </span>
+    </div>
+</aside>
+
+@section Scripts {
+<script>
+    // show match time in the visitor's own timezone
+    document.querySelectorAll('time.local-time').forEach(el => {
+        el.textContent = new Date(el.getAttribute('datetime')).toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    });
+    document.getElementById('share').addEventListener('click', async () => {
+        const data = { title: document.title, url: '@canonical' };
+        if (navigator.share) { try { await navigator.share(data); } catch { } }
+        else { await navigator.clipboard.writeText(data.url); document.getElementById('share').textContent = 'Link copied'; }
+    });
+</script>
+}
