@@ -9,6 +9,10 @@ DotEnv.Load();
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
 
+// Render passes the port to listen on in $PORT
+if (Environment.GetEnvironmentVariable("PORT") is { Length: > 0 } port)
+    builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 builder.Services.AddDbContext<AppDbContext>(o =>
     o.UseNpgsql(DbConnection.Build(config), npg => npg.EnableRetryOnFailure(3)));
 builder.Services.AddScoped<Seeder>();

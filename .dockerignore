@@ -1,0 +1,9 @@
+**/bin
+**/obj
+**/node_modules
+.git
+.env
+Tockens.txt
+tests
+spa
+contracts
