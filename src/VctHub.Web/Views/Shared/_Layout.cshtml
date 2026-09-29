@@ -30,6 +30,9 @@
                 <li><a class="nav-link" asp-controller="Players" asp-action="Index">Players</a></li>
                 <li><a class="nav-link" asp-controller="Map" asp-action="Index">Map</a></li>
             </ul>
+            <form class="d-flex me-2" action="/search" role="search">
+                <input class="form-control form-control-sm" name="q" placeholder="Search…" aria-label="Search" style="width:170px" />
+            </form>
             @await RenderSectionAsync("NavRight", required: false)
         </div>
     </nav>

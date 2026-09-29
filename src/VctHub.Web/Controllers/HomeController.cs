@@ -21,6 +21,9 @@ public class HomeController(AppDbContext db) : Controller
         return View(vm);
     }
 
+    [HttpGet("/search")]
+    public IActionResult Search() => View();
+
     [Route("/Home/Status/{code:int}")]
     public IActionResult Status(int code)
     {

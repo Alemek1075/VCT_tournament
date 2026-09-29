@@ -80,6 +80,12 @@ pm.test("sorted by date asc", () => {
   const d = pm.response.json().value.map(m => m.scheduledAt);
   pm.expect(d).to.eql([...d].sort());
 });"""),
+    req("Search tolerates typos", "GET", "/api/search?q=fnatik&limit=5", OK + """
+pm.test("FNATIC is the top hit", () => pm.expect(pm.response.json().hits[0].title).to.eql("FNATIC"));
+pm.test("engine reported", () => pm.expect(pm.response.headers.get("X-Search-Engine")).to.be.oneOf(["elasticsearch", "postgres"]));"""),
+    req("Search filter by type", "GET", "/api/search?q=champions&type=event", OK + """
+pm.test("only events", () => pm.response.json().hits.forEach(h => pm.expect(h.type).to.eql("event")));"""),
+    req("Search needs 2+ chars -> 400", "GET", "/api/search?q=x", 'pm.test("400", () => pm.response.to.have.status(400));'),
     req("Unknown team -> 404", "GET", "/api/teams/999999", """
 pm.test("404", () => pm.response.to.have.status(404));
 pm.test("problem+json", () => pm.expect(pm.response.headers.get("Content-Type")).to.include("problem+json"));"""),

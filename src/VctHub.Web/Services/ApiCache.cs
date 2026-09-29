@@ -46,7 +46,10 @@ public static class ApiCache
 
             var isWrite = !HttpMethods.IsGet(ctx.Request.Method) && !HttpMethods.IsHead(ctx.Request.Method);
             if (isWrite && ctx.Response.StatusCode < 400)
+            {
                 await ctx.RequestServices.GetRequiredService<IOutputCacheStore>().EvictByTagAsync(Tag, default);
+                ctx.RequestServices.GetRequiredService<SearchIndexer>().RequestReindex(); // B4: keep the search index fresh
+            }
         });
         app.UseOutputCache();
         return app;

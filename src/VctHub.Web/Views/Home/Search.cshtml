@@ -1,0 +1,54 @@
+@{
+    ViewData["Title"] = "Search";
+    var q = Context.Request.Query["q"].ToString();
+}
+<div class="container-xl">
+    <div class="page-head">
+        <div class="kicker">Teams · players · events · matches</div>
+        <h1>Search</h1>
+        <form class="d-flex gap-2 mt-3" id="search-form" role="search">
+            <input class="form-control form-control-lg" name="q" id="q" value="@q" placeholder="Try “aspas”, “Champions”, “Paper Rex vs”, or a typo like “fnatik”" autofocus autocomplete="off" />
+            <select class="form-select w-auto" name="type" id="type">
+                <option value="">Everything</option><option value="team">Teams</option><option value="player">Players</option>
+                <option value="event">Events</option><option value="match">Matches</option>
+            </select>
+        </form>
+        <div class="muted small mt-2" id="meta"></div>
+    </div>
+    <div class="panel" id="results"></div>
+</div>
+
+@section Scripts {
+<script>
+(() => {
+    const $q = document.getElementById('q'), $type = document.getElementById('type');
+    const $res = document.getElementById('results'), $meta = document.getElementById('meta');
+    const esc = s => (s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    // highlights come from Elasticsearch wrapped in <mark>; escape everything else
+    const mark = s => esc(s).replace(/&lt;mark&gt;/g, '<mark>').replace(/&lt;\/mark&gt;/g, '</mark>');
+    let timer, ctrl;
+
+    async function run() {
+        const q = $q.value.trim();
+        history.replaceState(null, '', q ? `?q=${encodeURIComponent(q)}` : location.pathname);
+        if (q.length < 2) { $res.innerHTML = ''; $meta.textContent = ''; return; }
+        ctrl?.abort(); ctrl = new AbortController();
+        const url = `/api/search?q=${encodeURIComponent(q)}&limit=30${$type.value ? '&type=' + $type.value : ''}`;
+        const r = await fetch(url, { signal: ctrl.signal }).then(r => r.json()).catch(() => null);
+        if (!r) return;
+        $meta.textContent = `${r.total} results · ${r.tookMs} ms · engine: ${r.engine}`;
+        $res.innerHTML = r.hits.length ? r.hits.map(h => `
+            <a class="d-flex align-items-center gap-3 p-3 border-bottom" href="${esc(h.url)}">
+                <img src="${esc(h.image)}" alt="" width="40" height="40" style="object-fit:contain" onerror="this.style.visibility='hidden'">
+                <span class="flex-grow-1"><strong>${esc(h.title)}</strong> <span class="tag">${h.type}</span><br>
+                <span class="muted small">${esc(h.subtitle)}</span>${h.highlight ? `<br><span class="small">${mark(h.highlight)}</span>` : ''}</span>
+            </a>`).join('') : '<p class="p-3 m-0 muted">Nothing found.</p>';
+    }
+    $q.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(run, 250); });
+    $type.addEventListener('change', run);
+    document.getElementById('search-form').addEventListener('submit', e => { e.preventDefault(); run(); });
+    run();
+})();
+</script>
+<style>mark { background: var(--red); color: #fff; padding: 0 .15em; }</style>
+}

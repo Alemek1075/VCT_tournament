@@ -26,6 +26,9 @@ builder.Services.AddControllersWithViews()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddProblemDetails();
 builder.Services.AddApiCache(config);
+builder.Services.AddSingleton<SearchService>();
+builder.Services.AddSingleton<SearchIndexer>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<SearchIndexer>());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o =>
 {
