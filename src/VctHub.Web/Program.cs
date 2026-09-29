@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -17,7 +18,17 @@ if (!string.IsNullOrEmpty(config["SUPABASE_SECRET_KEY"]))
 else
     builder.Services.AddSingleton<IFileStorage, LocalFileStorage>();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services.AddProblemDetails();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(o =>
+{
+    o.SwaggerDoc("v1", new() { Title = "VCT Hub API", Version = "v1", Description = "Teams, players, tournaments and matches of VCT 2026" });
+    o.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "VctHub.Web.xml"));
+    // only the JSON API goes into the OpenAPI document, MVC pages stay out
+    o.DocInclusionPredicate((_, api) => api.RelativePath?.StartsWith("api/") == true);
+});
 
 // Render / Docker sit behind a proxy that terminates TLS
 builder.Services.Configure<ForwardedHeadersOptions>(o =>
@@ -37,17 +48,22 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseForwardedHeaders();
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-}
-app.UseStatusCodePagesWithReExecute("/Home/Status/{0}");
+// API errors come back as application/problem+json with the right status code, pages get the HTML error page
+app.UseWhen(c => c.Request.Path.StartsWithSegments("/api"),
+    api => api.UseExceptionHandler());
+app.UseWhen(c => !c.Request.Path.StartsWithSegments("/api") && !app.Environment.IsDevelopment(),
+    web => web.UseExceptionHandler("/Home/Error"));
+app.UseWhen(c => !c.Request.Path.StartsWithSegments("/api"),
+    web => web.UseStatusCodePagesWithReExecute("/Home/Status/{0}"));
 
 // seed images (the CDN serves the same files from GitHub in production)
 var seedImg = Path.Combine(Seeder.SeedDir(app.Environment, config), "img");
 if (Directory.Exists(seedImg))
     app.UseStaticFiles(new StaticFileOptions { FileProvider = new PhysicalFileProvider(seedImg), RequestPath = "/seed-img" });
 app.UseStaticFiles(); // wwwroot/uploads is written at runtime, MapStaticAssets only knows build-time files
+
+app.UseSwagger();
+app.UseSwaggerUI(o => o.DocumentTitle = "VCT Hub API");
 
 app.UseRouting();
 app.UseAuthorization();
