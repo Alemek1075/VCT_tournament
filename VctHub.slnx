@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/VctHub.Web/VctHub.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VctHub.Tests/VctHub.Tests.csproj" />
+  </Folder>
+</Solution>

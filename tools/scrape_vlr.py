@@ -166,7 +166,7 @@ def parse_team(tid):
     roster = []
     for pid, img, alias, real, role in re.findall(
             r'team-roster-item">\s*<a href="/player/(\d+)/[^"]*"[^>]*>\s*<div class="team-roster-item-img">\s*<img src="([^"]+)">'
-            r'.*?team-roster-item-name-alias">(.*?)</div>\s*<div class="team-roster-item-name-real">(.*?)</div>(.*?)</a>',
+            r'.*?team-roster-item-name-alias">([^<]*(?:<i[^>]*></i>[^<]*)*)</div>(?:\s*<div class="team-roster-item-name-real">(.*?)</div>)?(.*?)</a>',
             page, re.S):
         r = re.search(r'name-role">(.*?)</div>', role, re.S)
         roster.append({"vlrId": int(pid), "nick": text(alias), "real": text(real),

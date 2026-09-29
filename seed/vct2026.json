@@ -13201,7 +13201,7 @@
      "staff": "Inactive",
      "captain": false,
      "photo": null,
-     "mainAgent": "phoenix",
+     "mainAgent": "neon",
      "role": "Duelist",
      "stats": [
       {
@@ -13516,8 +13516,8 @@
      "staff": "Inactive",
      "captain": true,
      "photo": null,
-     "mainAgent": "kayo",
-     "role": "Initiator",
+     "mainAgent": "omen",
+     "role": "Controller",
      "stats": [
       {
        "event": 2860,
@@ -14785,7 +14785,7 @@
      "staff": null,
      "captain": false,
      "photo": "player-4004.png",
-     "mainAgent": "phoenix",
+     "mainAgent": "neon",
      "role": "Duelist",
      "stats": [
       {
@@ -15119,8 +15119,8 @@
      "staff": "Inactive",
      "captain": false,
      "photo": null,
-     "mainAgent": "vyse",
-     "role": "Sentinel",
+     "mainAgent": "viper",
+     "role": "Controller",
      "stats": [
       {
        "event": 2682,
@@ -15198,7 +15198,16 @@
     },
     {
      "vlrId": 61419,
-     "nick": "Nandinnn\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\tmanager\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\tfRoD",
+     "nick": "Nandinnn",
+     "real": "",
+     "staff": "manager",
+     "captain": false,
+     "photo": null,
+     "stats": []
+    },
+    {
+     "vlrId": 145,
+     "nick": "fRoD",
      "real": "Daniel Montaner",
      "staff": "head coach",
      "captain": false,
@@ -16358,7 +16367,7 @@
      "staff": "Inactive",
      "captain": false,
      "photo": null,
-     "mainAgent": "waylay",
+     "mainAgent": "neon",
      "role": "Duelist",
      "stats": [
       {
@@ -16456,7 +16465,7 @@
      "staff": null,
      "captain": true,
      "photo": "player-3885.png",
-     "mainAgent": "astra",
+     "mainAgent": "omen",
      "role": "Controller",
      "stats": [
       {
@@ -17272,8 +17281,8 @@
      "staff": null,
      "captain": false,
      "photo": null,
-     "mainAgent": "yoru",
-     "role": "Duelist",
+     "mainAgent": "omen",
+     "role": "Controller",
      "stats": [
       {
        "event": 2682,
@@ -17906,7 +17915,7 @@
      "staff": null,
      "captain": false,
      "photo": "player-6672.png",
-     "mainAgent": "raze",
+     "mainAgent": "waylay",
      "role": "Duelist",
      "stats": [
       {
@@ -17990,8 +17999,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-29843.png",
-     "mainAgent": "skye",
-     "role": "Initiator",
+     "mainAgent": "neon",
+     "role": "Duelist",
      "stats": [
       {
        "event": 2683,
@@ -18157,8 +18166,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-13002.png",
-     "mainAgent": "sova",
-     "role": "Initiator",
+     "mainAgent": "neon",
+     "role": "Duelist",
      "stats": [
       {
        "event": 2683,
@@ -18531,7 +18540,7 @@
      "staff": null,
      "captain": false,
      "photo": "player-28400.png",
-     "mainAgent": "phoenix",
+     "mainAgent": "waylay",
      "role": "Duelist",
      "stats": [
       {
@@ -19621,7 +19630,7 @@
      "staff": "Inactive",
      "captain": false,
      "photo": null,
-     "mainAgent": "yoru",
+     "mainAgent": "neon",
      "role": "Duelist",
      "stats": [
       {
@@ -23044,7 +23053,7 @@
      "staff": null,
      "captain": false,
      "photo": "player-1960.png",
-     "mainAgent": "waylay",
+     "mainAgent": "neon",
      "role": "Duelist",
      "stats": [
       {
@@ -23127,8 +23136,8 @@
      "staff": "Inactive",
      "captain": false,
      "photo": null,
-     "mainAgent": "sage",
-     "role": "Sentinel",
+     "mainAgent": "skye",
+     "role": "Initiator",
      "stats": [
       {
        "event": 2683,
@@ -23218,6 +23227,15 @@
      "nick": "XQQ",
      "real": "Motoyama Hibiki",
      "staff": "assistant coach",
+     "captain": false,
+     "photo": null,
+     "stats": []
+    },
+    {
+     "vlrId": 31170,
+     "nick": "gya9",
+     "real": "",
+     "staff": "analyst",
      "captain": false,
      "photo": null,
      "stats": []
@@ -23384,8 +23402,8 @@
      "staff": null,
      "captain": false,
      "photo": null,
-     "mainAgent": "omen",
-     "role": "Controller",
+     "mainAgent": "neon",
+     "role": "Duelist",
      "stats": [
       {
        "event": 2683,
@@ -25252,7 +25270,7 @@
      "staff": null,
      "captain": false,
      "photo": "player-9810.png",
-     "mainAgent": "vyse",
+     "mainAgent": "cypher",
      "role": "Sentinel",
      "stats": [
       {
@@ -25677,7 +25695,7 @@
      "staff": null,
      "captain": false,
      "photo": null,
-     "mainAgent": "jett",
+     "mainAgent": "neon",
      "role": "Duelist",
      "stats": [
       {
@@ -25781,7 +25799,7 @@
      "staff": null,
      "captain": false,
      "photo": "player-12793.png",
-     "mainAgent": "raze",
+     "mainAgent": "waylay",
      "role": "Duelist",
      "stats": [
       {
@@ -27753,8 +27771,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-29867.png",
-     "mainAgent": "tejo",
-     "role": "Initiator",
+     "mainAgent": "viper",
+     "role": "Controller",
      "stats": [
       {
        "event": 2684,
@@ -29241,8 +29259,8 @@
      "staff": null,
      "captain": true,
      "photo": "player-9780.png",
-     "mainAgent": "yoru",
-     "role": "Duelist",
+     "mainAgent": "fade",
+     "role": "Initiator",
      "stats": [
       {
        "event": 2684,
@@ -30090,8 +30108,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-41720.png",
-     "mainAgent": "breach",
-     "role": "Initiator",
+     "mainAgent": "neon",
+     "role": "Duelist",
      "stats": [
       {
        "event": 2684,
@@ -30174,7 +30192,7 @@
      "staff": "Sub",
      "captain": false,
      "photo": null,
-     "mainAgent": "jett",
+     "mainAgent": "neon",
      "role": "Duelist",
      "stats": [
       {
@@ -30459,8 +30477,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-8376.png",
-     "mainAgent": "kayo",
-     "role": "Initiator",
+     "mainAgent": "neon",
+     "role": "Duelist",
      "stats": [
       {
        "event": 2684,
@@ -31101,7 +31119,7 @@
    "region": "china",
    "tag": "BLG",
    "logo": "team-12010.png",
-   "website": "https://weibo.com/u/7871626559\r",
+   "website": "https://weibo.com/u/7871626559\n",
    "twitter": "https://x.com/BilibiliGaming ",
    "countryCode": "cn",
    "country": "China",
@@ -31401,8 +31419,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-4774.png",
-     "mainAgent": "tejo",
-     "role": "Initiator",
+     "mainAgent": "omen",
+     "role": "Controller",
      "stats": [
       {
        "event": 2685,
@@ -32239,8 +32257,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-51244.png",
-     "mainAgent": "vyse",
-     "role": "Sentinel",
+     "mainAgent": "neon",
+     "role": "Duelist",
      "stats": [
       {
        "event": 2864,
@@ -32464,8 +32482,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-19530.png",
-     "mainAgent": "viper",
-     "role": "Controller",
+     "mainAgent": "killjoy",
+     "role": "Sentinel",
      "stats": [
       {
        "event": 2685,
@@ -32928,8 +32946,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-3519.png",
-     "mainAgent": "raze",
-     "role": "Duelist",
+     "mainAgent": "cypher",
+     "role": "Sentinel",
      "stats": [
       {
        "event": 2685,
@@ -33035,7 +33053,7 @@
      "staff": null,
      "captain": false,
      "photo": "player-49476.png",
-     "mainAgent": "yoru",
+     "mainAgent": "neon",
      "role": "Duelist",
      "stats": [
       {
@@ -33352,8 +33370,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-43007.png",
-     "mainAgent": "sova",
-     "role": "Initiator",
+     "mainAgent": "chamber",
+     "role": "Sentinel",
      "stats": [
       {
        "event": 2685,
@@ -33436,7 +33454,7 @@
      "staff": null,
      "captain": false,
      "photo": "player-39697.png",
-     "mainAgent": "phoenix",
+     "mainAgent": "neon",
      "role": "Duelist",
      "stats": [
       {
@@ -33602,8 +33620,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-41054.png",
-     "mainAgent": "viper",
-     "role": "Controller",
+     "mainAgent": "cypher",
+     "role": "Sentinel",
      "stats": [
       {
        "event": 2685,
@@ -33754,8 +33772,8 @@
      "staff": "Sub",
      "captain": false,
      "photo": null,
-     "mainAgent": "raze",
-     "role": "Duelist",
+     "mainAgent": "viper",
+     "role": "Controller",
      "stats": [
       {
        "event": 2685,
@@ -34215,7 +34233,7 @@
      "staff": "Sub",
      "captain": false,
      "photo": null,
-     "mainAgent": "phoenix",
+     "mainAgent": "waylay",
      "role": "Duelist",
      "stats": [
       {
@@ -34341,7 +34359,7 @@
      "staff": null,
      "captain": false,
      "photo": "player-3045.png",
-     "mainAgent": "astra",
+     "mainAgent": "omen",
      "role": "Controller",
      "stats": [
       {
@@ -34400,7 +34418,7 @@
      "staff": null,
      "captain": false,
      "photo": "player-37494.png",
-     "mainAgent": "jett",
+     "mainAgent": "neon",
      "role": "Duelist",
      "stats": [
       {
@@ -34484,7 +34502,7 @@
      "staff": null,
      "captain": false,
      "photo": "player-4770.png",
-     "mainAgent": "breach",
+     "mainAgent": "sova",
      "role": "Initiator",
      "stats": [
       {
@@ -34812,6 +34830,15 @@
        "fd": "35"
       }
      ]
+    },
+    {
+     "vlrId": 50171,
+     "nick": "Draven",
+     "real": "",
+     "staff": "staff",
+     "captain": false,
+     "photo": null,
+     "stats": []
     }
    ]
   },
@@ -35257,8 +35284,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-41739.png",
-     "mainAgent": "brimstone",
-     "role": "Controller",
+     "mainAgent": "chamber",
+     "role": "Sentinel",
      "stats": [
       {
        "event": 2685,
@@ -35541,8 +35568,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-6022.png",
-     "mainAgent": "vyse",
-     "role": "Sentinel",
+     "mainAgent": "viper",
+     "role": "Controller",
      "stats": [
       {
        "event": 2685,
@@ -35784,9 +35811,27 @@
     },
     {
      "vlrId": 61329,
-     "nick": "Chao\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\tmanager\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\talexRr",
+     "nick": "Chao",
+     "real": "",
+     "staff": "manager",
+     "captain": false,
+     "photo": null,
+     "stats": []
+    },
+    {
+     "vlrId": 1163,
+     "nick": "alexRr",
      "real": "Alexander Frisch",
      "staff": "head coach",
+     "captain": false,
+     "photo": null,
+     "stats": []
+    },
+    {
+     "vlrId": 61330,
+     "nick": "Ja7",
+     "real": "",
+     "staff": "staff",
      "captain": false,
      "photo": null,
      "stats": []
@@ -37223,6 +37268,24 @@
      "captain": false,
      "photo": null,
      "stats": []
+    },
+    {
+     "vlrId": 25716,
+     "nick": "Alti",
+     "real": "",
+     "staff": "performance coach",
+     "captain": false,
+     "photo": null,
+     "stats": []
+    },
+    {
+     "vlrId": 66045,
+     "nick": "Melon",
+     "real": "",
+     "staff": "analyst",
+     "captain": false,
+     "photo": null,
+     "stats": []
     }
    ]
   },
@@ -37363,8 +37426,8 @@
      "staff": null,
      "captain": false,
      "photo": "player-41720.png",
-     "mainAgent": "breach",
-     "role": "Initiator",
+     "mainAgent": "neon",
+     "role": "Duelist",
      "stats": [
       {
        "event": 2684,
@@ -37657,7 +37720,7 @@
      "staff": null,
      "captain": false,
      "photo": null,
-     "mainAgent": "vyse",
+     "mainAgent": "cypher",
      "role": "Sentinel",
      "stats": [
       {
@@ -37872,6 +37935,15 @@
      "vlrId": 66954,
      "nick": "Doo",
      "real": "Jung Hyeon-doo (정현두)",
+     "staff": "coach",
+     "captain": false,
+     "photo": null,
+     "stats": []
+    },
+    {
+     "vlrId": 53197,
+     "nick": "Leg1t",
+     "real": "",
      "staff": "coach",
      "captain": false,
      "photo": null,
@@ -38265,7 +38337,16 @@
     },
     {
      "vlrId": 48982,
-     "nick": "TonY\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\thead coach\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\n\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\n\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\n\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\tSebe",
+     "nick": "TonY",
+     "real": "",
+     "staff": "head coach",
+     "captain": false,
+     "photo": null,
+     "stats": []
+    },
+    {
+     "vlrId": 9722,
+     "nick": "Sebe",
      "real": "Sebastian Kruft",
      "staff": "coach",
      "captain": false,
