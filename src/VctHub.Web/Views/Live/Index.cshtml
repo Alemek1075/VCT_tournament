@@ -1,0 +1,56 @@
+@model List<Match>
+@{ var live = (List<VctHub.Web.Live.LiveState>)ViewBag.Live; }
+<div class="container-xl">
+    <div class="page-head">
+        <div class="kicker">Real time</div>
+        <h1>Live</h1>
+        <p class="muted mb-0">No VCT match is on right now? Start a simulation: rounds tick every few seconds and every open page updates instantly.</p>
+    </div>
+
+    @if (live.Count > 0)
+    {
+        <h2 class="h4">Now playing</h2>
+        <div class="panel mb-4">
+            @foreach (var s in live)
+            {
+                <div class="d-flex align-items-center gap-3 p-3 border-bottom flex-wrap">
+                    <span class="tag live">Live</span>
+                    <strong>@s.TeamA @s.MapsA – @s.MapsB @s.TeamB</strong>
+                    <span class="muted">@s.MapName: @s.RoundsA–@s.RoundsB</span>
+                    <span class="ms-auto d-flex gap-2">
+                        <a class="btn btn-ghost btn-sm" asp-controller="Matches" asp-action="Details" asp-route-id="@s.MatchId">Watch</a>
+                        <a class="btn btn-red btn-sm" asp-action="Compare" asp-route-id="@s.MatchId">Compare transports</a>
+                    </span>
+                </div>
+            }
+        </div>
+    }
+
+    <h2 class="h4">Start a simulation</h2>
+    <div class="panel">
+        @foreach (var m in Model)
+        {
+            <div class="d-flex align-items-center gap-3 p-3 border-bottom flex-wrap">
+                <img class="logo-sm" src="@m.TeamA?.LogoUrl" alt="" /> <strong>@m.TeamA?.Name</strong>
+                <span class="muted">vs</span>
+                <strong>@m.TeamB?.Name</strong> <img class="logo-sm" src="@m.TeamB?.LogoUrl" alt="" />
+                <span class="muted small">@m.Tournament?.Name · Bo@(m.BestOf)</span>
+                <span class="ms-auto d-flex gap-2">
+                    <button class="btn btn-red btn-sm" data-start="@m.Id">Simulate</button>
+                    <a class="btn btn-ghost btn-sm" asp-action="Compare" asp-route-id="@m.Id">Compare</a>
+                </span>
+            </div>
+        }
+        @if (Model.Count == 0) { <p class="p-3 m-0 muted">No upcoming matches — create one on the Matches page.</p> }
+    </div>
+</div>
+@section Scripts {
+<script>
+    document.querySelectorAll('[data-start]').forEach(b => b.addEventListener('click', async () => {
+        b.disabled = true;
+        const r = await fetch(`/api/live/${b.dataset.start}/start`, { method: 'POST', headers: { 'RequestVerificationToken': document.querySelector('meta[name=csrf]')?.content ?? '' } });
+        if (r.ok) location.href = `/Matches/Details/${b.dataset.start}`;
+        else { b.disabled = false; alert('Could not start: ' + r.status); }
+    }));
+</script>
+}
