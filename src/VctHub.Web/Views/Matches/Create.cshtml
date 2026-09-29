@@ -1,0 +1,7 @@
+@model Match
+@{ ViewData["Title"] = "New match"; }
+<div class="container-xl">
+    <div class="page-head"><div class="kicker">Matches</div><h1>New match</h1></div>
+    <partial name="_Form" model="Model" />
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

@@ -1,0 +1,63 @@
+@model HomeVm
+@{ ViewData["Title"] = null; }
+
+<section class="hero">
+    <div class="container-xl">
+        <div class="kicker">Valorant Champions Tour · 2026 season</div>
+        @if (Model.Current is { } cur)
+        {
+            <h1>@cur.Name</h1>
+            <p class="lead muted">
+                @cur.StartDate.ToString("MMM d") – @cur.EndDate.ToString("MMM d, yyyy") · @cur.Venue
+                @if (cur.PrizePool > 0) { <text> · $@cur.PrizePool.Value.ToString("N0")</text> }
+            </p>
+            <a class="btn btn-red" asp-controller="Tournaments" asp-action="Details" asp-route-id="@cur.Id">Bracket &amp; results</a>
+            <a class="btn btn-ghost ms-2" asp-controller="Matches" asp-action="Index" asp-route-status="Upcoming">Schedule</a>
+        }
+        else
+        {
+            <h1>VCT Hub</h1>
+        }
+    </div>
+</section>
+
+<div class="container-xl">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            @if (Model.Live.Count > 0)
+            {
+                <h2 class="h4 mt-2"><span class="tag live">Live</span> Now playing</h2>
+                <div class="panel mb-4">
+                    @foreach (var m in Model.Live) { <partial name="_MatchRow" model="m" /> }
+                </div>
+            }
+            <h2 class="h4 mt-2">Upcoming</h2>
+            <div class="panel mb-4">
+                @foreach (var m in Model.Upcoming) { <partial name="_MatchRow" model="m" /> }
+                @if (Model.Upcoming.Count == 0) { <p class="p-3 muted m-0">Nothing scheduled.</p> }
+            </div>
+            <h2 class="h4">Latest results</h2>
+            <div class="panel">
+                @foreach (var m in Model.Results) { <partial name="_MatchRow" model="m" /> }
+            </div>
+        </div>
+        <aside class="col-lg-4">
+            <h2 class="h4 mt-2">Top rated players</h2>
+            <div class="panel">
+                @{ var i = 1; }
+                @foreach (var p in Model.TopPlayers)
+                {
+                    <a class="d-flex align-items-center gap-3 p-3 border-bottom" asp-controller="Players" asp-action="Details" asp-route-id="@p.Id">
+                        <span class="display fs-3 fw-bold text-danger" style="width:1.5rem">@(i++)</span>
+                        <img class="avatar" src="@(p.PhotoUrl ?? p.Team?.LogoUrl)" alt="" loading="lazy" />
+                        <span class="flex-grow-1">
+                            <strong>@p.Nickname</strong><br />
+                            <span class="muted small">@p.Team?.Name · @p.Role</span>
+                        </span>
+                        <span class="text-end"><strong>@p.Rating</strong><br /><span class="muted small">rating</span></span>
+                    </a>
+                }
+            </div>
+        </aside>
+    </div>
+</div>

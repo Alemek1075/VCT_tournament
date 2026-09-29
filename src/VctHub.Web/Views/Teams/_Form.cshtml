@@ -1,0 +1,68 @@
+@model Team
+<form method="post" enctype="multipart/form-data" class="row g-3">
+    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+    <div class="col-md-6">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="field-validation-error"></span>
+    </div>
+    <div class="col-md-2">
+        <label asp-for="Tag" class="form-label"></label>
+        <input asp-for="Tag" class="form-control" />
+        <span asp-validation-for="Tag" class="field-validation-error"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="RegionId" class="form-label"></label>
+        <select asp-for="RegionId" asp-items="ViewBag.Regions" class="form-select"></select>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Country" class="form-label"></label>
+        <input asp-for="Country" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label asp-for="CountryCode" class="form-label"></label>
+        <input asp-for="CountryCode" class="form-control" maxlength="4" />
+    </div>
+    <div class="col-md-2">
+        <label asp-for="City" class="form-label"></label>
+        <input asp-for="City" class="form-control" />
+    </div>
+    <div class="col-md-2">
+        <label asp-for="Latitude" class="form-label"></label>
+        <input asp-for="Latitude" class="form-control" step="any" />
+    </div>
+    <div class="col-md-2">
+        <label asp-for="Longitude" class="form-label"></label>
+        <input asp-for="Longitude" class="form-control" step="any" />
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Website" class="form-label"></label>
+        <input asp-for="Website" class="form-control" />
+        <span asp-validation-for="Website" class="field-validation-error"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Twitter" class="form-label"></label>
+        <input asp-for="Twitter" class="form-control" />
+        <span asp-validation-for="Twitter" class="field-validation-error"></span>
+    </div>
+    <div class="col-12">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label" for="logoFile">Logo file (png, jpg, webp)</label>
+        <input type="file" name="logoFile" id="logoFile" class="form-control" accept="image/png,image/jpeg,image/webp,image/gif" />
+        <span class="field-validation-error">@Html.ValidationMessage("logoFile")</span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="LogoUrl" class="form-label">…or logo URL</label>
+        <div class="d-flex gap-2 align-items-center">
+            <input asp-for="LogoUrl" class="form-control" />
+            @if (!string.IsNullOrEmpty(Model.LogoUrl)) { <img class="logo-md" src="@Model.LogoUrl" alt="" /> }
+        </div>
+    </div>
+    <div class="col-12 d-flex gap-2">
+        <button class="btn btn-red">Save</button>
+        <a class="btn btn-ghost" asp-action="Index">Cancel</a>
+    </div>
+</form>

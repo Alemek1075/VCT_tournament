@@ -1,0 +1,33 @@
+@model Match
+@{ ViewData["Title"] = $"{Model.TeamA?.Name} vs {Model.TeamB?.Name}"; }
+<div class="container-xl">
+    <div class="page-head text-center">
+        <div class="kicker"><a asp-controller="Tournaments" asp-action="Details" asp-route-id="@Model.TournamentId">@Model.Tournament?.Name</a> · @Model.Series</div>
+        <div class="d-flex justify-content-center align-items-center gap-4 gap-md-5 my-4 flex-wrap">
+            <a href="/team/@Model.TeamA?.Slug" class="text-center">
+                <img src="@Model.TeamA?.LogoUrl" alt="" style="width:110px;height:110px;object-fit:contain" />
+                <h2 class="mt-2">@Model.TeamA?.Name</h2>
+            </a>
+            <div>
+                <div class="display fw-bold" style="font-size:4.5rem;line-height:1" id="score">
+                    @if (Model.Status == MatchStatus.Upcoming) { <span class="muted">VS</span> }
+                    else { <span data-score-a>@Model.ScoreA</span><span class="muted"> : </span><span data-score-b>@Model.ScoreB</span> }
+                </div>
+                <div class="mt-2">
+                    <span class="tag @(Model.Status == MatchStatus.Live ? "live" : Model.Status == MatchStatus.Upcoming ? "soon" : "done")" id="status">@Model.Status</span>
+                    <span class="tag">Bo@(Model.BestOf)</span>
+                </div>
+                <div class="muted small mt-2">@Model.ScheduledAt.ToString("ddd, MMM d yyyy · HH:mm") UTC</div>
+            </div>
+            <a href="/team/@Model.TeamB?.Slug" class="text-center">
+                <img src="@Model.TeamB?.LogoUrl" alt="" style="width:110px;height:110px;object-fit:contain" />
+                <h2 class="mt-2">@Model.TeamB?.Name</h2>
+            </a>
+        </div>
+        <div class="d-flex justify-content-center gap-2">
+            @if (!string.IsNullOrEmpty(Model.VodUrl)) { <a class="btn btn-red" href="@Model.VodUrl" target="_blank" rel="noopener">Watch VOD</a> }
+            <a class="btn btn-ghost" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+            <a class="btn btn-ghost" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+        </div>
+    </div>
+</div>

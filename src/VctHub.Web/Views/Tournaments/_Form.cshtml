@@ -1,0 +1,56 @@
+@model Tournament
+<form method="post" enctype="multipart/form-data" class="row g-3">
+    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+    <div class="col-md-6">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="field-validation-error"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Stage" class="form-label"></label>
+        <input asp-for="Stage" class="form-control" list="stages" />
+        <datalist id="stages"><option>Kickoff</option><option>Stage 1</option><option>Stage 2</option><option>Masters</option><option>Champions</option></datalist>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="RegionId" class="form-label"></label>
+        <select asp-for="RegionId" asp-items="ViewBag.Regions" class="form-select"></select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="StartDate" class="form-label"></label>
+        <input asp-for="StartDate" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="EndDate" class="form-label"></label>
+        <input asp-for="EndDate" class="form-control" />
+        <span asp-validation-for="EndDate" class="field-validation-error"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="PrizePool" class="form-label"></label>
+        <input asp-for="PrizePool" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Venue" class="form-label"></label>
+        <input asp-for="Venue" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Latitude" class="form-label"></label>
+        <input asp-for="Latitude" class="form-control" step="any" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Longitude" class="form-label"></label>
+        <input asp-for="Longitude" class="form-control" step="any" />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label" for="logoFile">Logo file</label>
+        <input type="file" name="logoFile" id="logoFile" class="form-control" accept="image/png,image/jpeg,image/webp" />
+        <span class="field-validation-error">@Html.ValidationMessage("logoFile")</span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="LogoUrl" class="form-label">…or logo URL</label>
+        <input asp-for="LogoUrl" class="form-control" />
+    </div>
+    <div class="col-12 d-flex gap-2">
+        <button class="btn btn-red">Save</button>
+        <a class="btn btn-ghost" asp-action="Index">Cancel</a>
+    </div>
+</form>

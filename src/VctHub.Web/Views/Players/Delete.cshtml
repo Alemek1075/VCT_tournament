@@ -1,0 +1,13 @@
+@model Player
+@{ ViewData["Title"] = $"Delete {Model.Nickname}"; }
+<div class="container-xl">
+    <div class="page-head"><div class="kicker">Players</div><h1>Delete @Model.Nickname?</h1></div>
+    <div class="d-flex gap-3 align-items-center mb-4">
+        <img class="avatar" src="@Model.PhotoUrl" alt="" />
+        <div>@Model.Nickname · @Model.RealName · @Model.Team?.Name</div>
+    </div>
+    <form method="post" class="d-flex gap-2">
+        <button class="btn btn-red">Delete</button>
+        <a class="btn btn-ghost" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+    </form>
+</div>

@@ -1,0 +1,7 @@
+@model Player
+@{ ViewData["Title"] = "New player"; }
+<div class="container-xl">
+    <div class="page-head"><div class="kicker">Players</div><h1>New player</h1></div>
+    <partial name="_Form" model="Model" />
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

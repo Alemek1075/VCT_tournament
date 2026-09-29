@@ -1,0 +1,53 @@
+@model Player
+<form method="post" enctype="multipart/form-data" class="row g-3">
+    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+    <div class="col-md-4">
+        <label asp-for="Nickname" class="form-label"></label>
+        <input asp-for="Nickname" class="form-control" />
+        <span asp-validation-for="Nickname" class="field-validation-error"></span>
+    </div>
+    <div class="col-md-5">
+        <label asp-for="RealName" class="form-label"></label>
+        <input asp-for="RealName" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="CountryCode" class="form-label"></label>
+        <input asp-for="CountryCode" class="form-control" maxlength="4" />
+    </div>
+    <div class="col-md-4">
+        <label asp-for="TeamId" class="form-label"></label>
+        <select asp-for="TeamId" asp-items="ViewBag.Teams" class="form-select">
+            <option value="">— free agent —</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Role" class="form-label"></label>
+        <select asp-for="Role" asp-items="ViewBag.Roles" class="form-select"><option value="">—</option></select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="MainAgent" class="form-label"></label>
+        <input asp-for="MainAgent" class="form-control" />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <div class="form-check">
+            <input asp-for="IsCaptain" class="form-check-input" />
+            <label asp-for="IsCaptain" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label" for="photoFile">Photo file</label>
+        <input type="file" name="photoFile" id="photoFile" class="form-control" accept="image/png,image/jpeg,image/webp" />
+        <span class="field-validation-error">@Html.ValidationMessage("photoFile")</span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="PhotoUrl" class="form-label">…or photo URL</label>
+        <div class="d-flex gap-2 align-items-center">
+            <input asp-for="PhotoUrl" class="form-control" />
+            @if (!string.IsNullOrEmpty(Model.PhotoUrl)) { <img class="avatar" src="@Model.PhotoUrl" alt="" /> }
+        </div>
+    </div>
+    <div class="col-12 d-flex gap-2">
+        <button class="btn btn-red">Save</button>
+        <a class="btn btn-ghost" asp-action="Index">Cancel</a>
+    </div>
+</form>

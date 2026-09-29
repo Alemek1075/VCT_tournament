@@ -1,0 +1,26 @@
+@model List<Tournament>
+@{ ViewData["Title"] = "Events"; }
+<div class="container-xl">
+    <div class="page-head d-flex align-items-end">
+        <div class="me-auto"><div class="kicker">VCT 2026</div><h1>Events</h1></div>
+        <a class="btn btn-red" asp-action="Create">+ New event</a>
+    </div>
+    <div class="row g-3">
+        @foreach (var t in Model)
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var state = today < t.StartDate ? "Upcoming" : today > t.EndDate ? "Finished" : "Ongoing";
+            <div class="col-md-6 col-xl-4">
+                <a class="team-card" asp-action="Details" asp-route-id="@t.Id">
+                    <img class="logo-md" src="@t.LogoUrl" alt="" loading="lazy" />
+                    <div class="min-w-0">
+                        <div class="name">@t.Name</div>
+                        <div class="muted small">@t.StartDate.ToString("MMM d") – @t.EndDate.ToString("MMM d") · @t.Venue</div>
+                        <span class="tag @(state == "Ongoing" ? "live" : state == "Upcoming" ? "soon" : "")">@state</span>
+                        @if (t.PrizePool > 0) { <span class="tag">$@t.PrizePool.Value.ToString("N0")</span> }
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>

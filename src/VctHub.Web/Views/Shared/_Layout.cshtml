@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] is string t ? $"{t} · VCT Hub" : "VCT Hub — Valorant Champions Tour 2026")</title>
+    <meta name="description" content="@(ViewData["Description"] ?? "Matches, teams, players and stats of the Valorant Champions Tour 2026.")" />
+    @RenderSection("Meta", required: false)
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @RenderSection("Head", required: false)
+</head>
+<body>
+<header class="topbar">
+    <nav class="navbar navbar-expand-lg container-xl">
+        <a class="brand" asp-controller="Home" asp-action="Index">
+            <span class="brand-mark">V</span><span>VCT<b>HUB</b></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav me-auto">
+                <li><a class="nav-link" asp-controller="Matches" asp-action="Index">Matches</a></li>
+                <li><a class="nav-link" asp-controller="Tournaments" asp-action="Index">Events</a></li>
+                <li><a class="nav-link" asp-controller="Teams" asp-action="Index">Teams</a></li>
+                <li><a class="nav-link" asp-controller="Players" asp-action="Index">Players</a></li>
+            </ul>
+            @await RenderSectionAsync("NavRight", required: false)
+        </div>
+    </nav>
+</header>
+
+<main>
+    @if (TempData["Flash"] is string flash)
+    {
+        <div class="container-xl pt-3"><div class="flash">@flash</div></div>
+    }
+    @RenderBody()
+</main>
+
+<footer class="site-footer">
+    <div class="container-xl">
+        <p>VCT Hub is a student project (KNU, Web-технології). Data: <a href="https://www.vlr.gg" rel="nofollow">vlr.gg</a>.</p>
+        <p class="legal">VCT Hub isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, VALORANT and all associated properties are trademarks or registered trademarks of Riot Games, Inc.</p>
+    </div>
+</footer>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

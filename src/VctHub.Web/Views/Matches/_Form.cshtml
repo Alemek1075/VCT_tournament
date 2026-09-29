@@ -1,0 +1,52 @@
+@model Match
+<form method="post" class="row g-3">
+    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+    <input type="hidden" asp-for="Id" />
+    <div class="col-md-6">
+        <label asp-for="TournamentId" class="form-label"></label>
+        <select asp-for="TournamentId" asp-items="ViewBag.Tournaments" class="form-select"></select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Series" class="form-label"></label>
+        <input asp-for="Series" class="form-control" placeholder="Week 1 / Upper Final" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="ScheduledAt" class="form-label"></label>
+        <input asp-for="ScheduledAt" class="form-control" type="datetime-local" />
+    </div>
+    <div class="col-md-5">
+        <label asp-for="TeamAId" class="form-label"></label>
+        <select asp-for="TeamAId" asp-items="ViewBag.Teams" class="form-select team-select"></select>
+    </div>
+    <div class="col-md-1">
+        <label asp-for="ScoreA" class="form-label"></label>
+        <input asp-for="ScoreA" class="form-control" />
+    </div>
+    <div class="col-md-1">
+        <label asp-for="ScoreB" class="form-label"></label>
+        <input asp-for="ScoreB" class="form-control" />
+    </div>
+    <div class="col-md-5">
+        <label asp-for="TeamBId" class="form-label"></label>
+        <select asp-for="TeamBId" asp-items="ViewBag.Teams" class="form-select team-select"></select>
+        <span asp-validation-for="TeamBId" class="field-validation-error"></span>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Status" class="form-label"></label>
+        <select asp-for="Status" asp-items="Html.GetEnumSelectList<MatchStatus>()" class="form-select"></select>
+    </div>
+    <div class="col-md-2">
+        <label asp-for="BestOf" class="form-label"></label>
+        <select asp-for="BestOf" class="form-select"><option>1</option><option>3</option><option>5</option></select>
+    </div>
+    <div class="col-md-7">
+        <label asp-for="VodUrl" class="form-label"></label>
+        <input asp-for="VodUrl" class="form-control" />
+        <span asp-validation-for="VodUrl" class="field-validation-error"></span>
+    </div>
+    <span asp-validation-for="ScoreA" class="field-validation-error"></span>
+    <div class="col-12 d-flex gap-2">
+        <button class="btn btn-red">Save</button>
+        <a class="btn btn-ghost" asp-action="Index">Cancel</a>
+    </div>
+</form>

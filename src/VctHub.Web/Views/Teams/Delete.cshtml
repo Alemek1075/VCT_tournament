@@ -1,0 +1,13 @@
+@model Team
+@{ ViewData["Title"] = $"Delete {Model.Name}"; }
+<div class="container-xl">
+    <div class="page-head"><div class="kicker">Teams</div><h1>Delete @Model.Name?</h1></div>
+    <div class="d-flex gap-3 align-items-center mb-4">
+        <img class="logo-md" src="@Model.LogoUrl" alt="" />
+        <div>@Model.Name (@Model.Tag) · @Model.Region?.Name<br /><span class="muted">Players stay in the database without a team.</span></div>
+    </div>
+    <form method="post" class="d-flex gap-2">
+        <button class="btn btn-red">Delete</button>
+        <a class="btn btn-ghost" href="/team/@Model.Slug">Cancel</a>
+    </form>
+</div>

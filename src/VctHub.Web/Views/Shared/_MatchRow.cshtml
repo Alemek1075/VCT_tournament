@@ -1,0 +1,30 @@
+@model Match
+@{
+    var done = Model.Status == MatchStatus.Completed;
+    var aWin = done && Model.ScoreA > Model.ScoreB;
+    var bWin = done && Model.ScoreB > Model.ScoreA;
+}
+<a class="match-row" asp-controller="Matches" asp-action="Details" asp-route-id="@Model.Id" data-match-id="@Model.Id">
+    <div class="when muted small">
+        @Model.ScheduledAt.ToString("MMM d")<br/>@Model.ScheduledAt.ToString("HH:mm") UTC
+    </div>
+    <div class="team @(bWin ? "lose" : "win")">
+        <img class="logo-sm" src="@Model.TeamA?.LogoUrl" alt="" loading="lazy" /><span>@Model.TeamA?.Name</span>
+    </div>
+    <div class="score">
+        @if (Model.Status == MatchStatus.Upcoming) { <span class="muted">vs</span> }
+        else { <span class="@(aWin ? "" : "muted")" data-score-a>@Model.ScoreA</span><span class="muted">:</span><span class="@(bWin ? "" : "muted")" data-score-b>@Model.ScoreB</span> }
+    </div>
+    <div class="team right @(aWin ? "lose" : "win")">
+        <span>@Model.TeamB?.Name</span><img class="logo-sm" src="@Model.TeamB?.LogoUrl" alt="" loading="lazy" />
+    </div>
+    <div class="meta text-end small">
+        @switch (Model.Status)
+        {
+            case MatchStatus.Live: <span class="tag live">Live</span> break;
+            case MatchStatus.Upcoming: <span class="tag soon">Bo@(Model.BestOf)</span> break;
+            default: <span class="tag done">Final</span> break;
+        }
+        <div class="muted text-truncate">@Model.Series</div>
+    </div>
+</a>

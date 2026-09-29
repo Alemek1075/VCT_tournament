@@ -1,0 +1,19 @@
+@model (int Page, int Pages)
+@if (Model.Pages > 1)
+{
+    string Link(int p)
+    {
+        var q = Context.Request.Query.ToDictionary(kv => kv.Key, kv => kv.Value.ToString());
+        q["page"] = p.ToString();
+        return Context.Request.Path + QueryString.Create(q!);
+    }
+    <nav class="pager" aria-label="Pages">
+        @if (Model.Page > 1) { <a href="@Link(Model.Page - 1)">‹ Prev</a> }
+        @for (var p = Math.Max(1, Model.Page - 3); p <= Math.Min(Model.Pages, Model.Page + 3); p++)
+        {
+            if (p == Model.Page) { <span class="current">@p</span> }
+            else { <a href="@Link(p)">@p</a> }
+        }
+        @if (Model.Page < Model.Pages) { <a href="@Link(Model.Page + 1)">Next ›</a> }
+    </nav>
+}

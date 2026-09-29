@@ -1,0 +1,29 @@
+@model PagedList<Match>
+@{
+    ViewData["Title"] = "Matches";
+    var status = ViewBag.Status as MatchStatus?;
+}
+<div class="container-xl">
+    <div class="page-head d-flex flex-wrap align-items-end gap-3">
+        <div class="me-auto"><div class="kicker">@Model.Total matches</div><h1>Matches</h1></div>
+        <form method="get" class="d-flex gap-2">
+            @if (status != null) { <input type="hidden" name="status" value="@status" /> }
+            <select class="form-select" name="tournamentId" asp-items="ViewBag.Tournaments" onchange="this.form.submit()">
+                <option value="">All events</option>
+            </select>
+        </form>
+        <a class="btn btn-red" asp-action="Create">+ New match</a>
+    </div>
+    <div class="d-flex gap-2 mb-3">
+        <a class="tag @(status == null ? "live" : "")" asp-action="Index" asp-route-tournamentId="@ViewBag.TournamentId">All</a>
+        @foreach (var s in Enum.GetValues<MatchStatus>())
+        {
+            <a class="tag @(status == s ? "live" : "")" asp-action="Index" asp-route-status="@s" asp-route-tournamentId="@ViewBag.TournamentId">@s</a>
+        }
+    </div>
+    <div class="panel">
+        @foreach (var m in Model.Items) { <partial name="_MatchRow" model="m" /> }
+        @if (Model.Items.Count == 0) { <p class="p-3 m-0 muted">No matches.</p> }
+    </div>
+    <partial name="_Pager" model="(Model.Page, Model.Pages)" />
+</div>

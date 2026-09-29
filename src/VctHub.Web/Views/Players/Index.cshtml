@@ -1,0 +1,67 @@
+@model PagedList<Player>
+@{
+    ViewData["Title"] = "Players";
+    var role = ViewBag.Role as string;
+    var sort = ViewBag.Sort as string;
+}
+<div class="container-xl">
+    <div class="page-head d-flex flex-wrap align-items-end gap-3">
+        <div class="me-auto">
+            <div class="kicker">Season 2026 stats</div>
+            <h1>Players</h1>
+        </div>
+        <form class="d-flex gap-2" method="get">
+            <input class="form-control" name="q" value="@Model.Query" placeholder="Nickname or name" />
+            <select class="form-select" name="role">
+                <option value="">Any role</option>
+                @foreach (var r in VctHub.Web.Controllers.PlayersController.Roles)
+                {
+                    <option value="@r" selected="@(r == role)">@r</option>
+                }
+            </select>
+            <input type="hidden" name="sort" value="@sort" />
+            <button class="btn btn-ghost">Filter</button>
+        </form>
+        <a class="btn btn-red" asp-action="Create">+ New player</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th><a asp-route-sort="name" asp-route-q="@Model.Query" asp-route-role="@role">Player</a></th>
+                <th>Team</th>
+                <th>Role</th>
+                <th class="text-end"><a asp-route-sort="rating" asp-route-q="@Model.Query" asp-route-role="@role">Rating</a></th>
+                <th class="text-end"><a asp-route-sort="acs" asp-route-q="@Model.Query" asp-route-role="@role">ACS</a></th>
+                <th class="text-end"><a asp-route-sort="kd" asp-route-q="@Model.Query" asp-route-role="@role">K:D</a></th>
+                <th class="text-end"><a asp-route-sort="adr" asp-route-q="@Model.Query" asp-route-role="@role">ADR</a></th>
+                <th class="text-end">KAST</th>
+                <th class="text-end">HS%</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var p in Model.Items)
+            {
+                <tr>
+                    <td>
+                        <a class="d-flex align-items-center gap-2" asp-action="Details" asp-route-id="@p.Id">
+                            <img class="avatar" src="@(p.PhotoUrl ?? p.Team?.LogoUrl)" alt="" loading="lazy" />
+                            <span><strong>@p.Nickname</strong><br /><span class="muted small">@p.RealName</span></span>
+                        </a>
+                    </td>
+                    <td>@if (p.Team != null) { <a href="/team/@p.Team.Slug"><img class="logo-sm" src="@p.Team.LogoUrl" alt="" /> @p.Team.Tag</a> }</td>
+                    <td class="muted">@p.Role</td>
+                    <td class="text-end"><strong>@p.Rating</strong></td>
+                    <td class="text-end">@p.Acs</td>
+                    <td class="text-end">@p.Kd</td>
+                    <td class="text-end">@p.Adr</td>
+                    <td class="text-end">@p.Kast%</td>
+                    <td class="text-end">@p.Hs%</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <partial name="_Pager" model="(Model.Page, Model.Pages)" />
+</div>

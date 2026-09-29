@@ -1,0 +1,8 @@
+@model int
+@{ ViewData["Title"] = Model == 404 ? "Not found" : "Error"; }
+<div class="container-xl py-5">
+    <div class="kicker text-danger display fs-5">Error @Model</div>
+    <h1>@(Model == 404 ? "This page got eco'd" : "Something broke")</h1>
+    <p class="muted">@(Model == 404 ? "Nothing lives at this address." : "Try again in a moment.")</p>
+    <a class="btn btn-red" href="/">Back to home</a>
+</div>

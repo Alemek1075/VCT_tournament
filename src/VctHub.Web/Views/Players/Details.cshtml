@@ -1,0 +1,55 @@
+@model Player
+@{ ViewData["Title"] = Model.Nickname; }
+<div class="container-xl">
+    <div class="page-head d-flex flex-wrap gap-4 align-items-center">
+        <img src="@(Model.PhotoUrl ?? Model.Team?.LogoUrl)" alt="@Model.Nickname" style="width:140px;height:140px;object-fit:cover;background:var(--ink-2)" />
+        <div class="me-auto">
+            <div class="kicker">@Model.Role @(Model.MainAgent is null ? "" : $"· {Model.MainAgent}")</div>
+            <h1>@Model.Nickname @if (Model.IsCaptain) { <span class="tag">Captain</span> }</h1>
+            <div class="muted">@Model.RealName @(Model.CountryCode is null ? "" : $"· {Model.CountryCode.ToUpperInvariant()}")</div>
+            @if (Model.Team != null)
+            {
+                <a class="d-inline-flex align-items-center gap-2 mt-2" href="/team/@Model.Team.Slug">
+                    <img class="logo-sm" src="@Model.Team.LogoUrl" alt="" /> @Model.Team.Name
+                </a>
+            }
+            @if (Model.RankedAccount != null)
+            {
+                <div class="muted small mt-1">Ranked: @Model.RankedAccount.RiotId · @Model.RankedAccount.Rank</div>
+            }
+        </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-ghost" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+            <a class="btn btn-ghost" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4 text-center">
+        @foreach (var (label, value) in new[] { ("Rating", Model.Rating.ToString()), ("ACS", Model.Acs.ToString()), ("K:D", Model.Kd.ToString()),
+                      ("ADR", Model.Adr.ToString()), ("KAST", $"{Model.Kast}%"), ("HS%", $"{Model.Hs}%"), ("Maps", Model.Maps.ToString()) })
+        {
+            <div class="col"><div class="panel p-3"><div class="display fs-2 fw-bold">@value</div><div class="muted small">@label</div></div></div>
+        }
+    </div>
+
+    <h2 class="h4">By event</h2>
+    <div class="table-responsive">
+        <table class="table">
+            <thead><tr><th>Event</th><th>Agent</th><th class="text-end">Maps</th><th class="text-end">Rating</th><th class="text-end">ACS</th><th class="text-end">K:D</th><th class="text-end">ADR</th></tr></thead>
+            <tbody>
+            @foreach (var s in Model.EventStats.OrderBy(s => s.Tournament!.StartDate))
+            {
+                <tr>
+                    <td><a asp-controller="Tournaments" asp-action="Details" asp-route-id="@s.TournamentId">@s.Tournament!.Name</a></td>
+                    <td class="muted">@s.TopAgent</td>
+                    <td class="text-end">@s.Maps</td>
+                    <td class="text-end"><strong>@s.Rating</strong></td>
+                    <td class="text-end">@s.Acs</td>
+                    <td class="text-end">@s.Kd</td>
+                    <td class="text-end">@s.Adr</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,10 @@
+@model Tournament
+@{ ViewData["Title"] = $"Delete {Model.Name}"; }
+<div class="container-xl">
+    <div class="page-head"><div class="kicker">Events</div><h1>Delete @Model.Name?</h1></div>
+    <p>This also deletes <strong>@Model.Matches.Count matches</strong> and the player stats for this event.</p>
+    <form method="post" class="d-flex gap-2">
+        <button class="btn btn-red">Delete</button>
+        <a class="btn btn-ghost" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+    </form>
+</div>

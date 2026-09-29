@@ -1,0 +1,10 @@
+@model Match
+@{ ViewData["Title"] = "Delete match"; }
+<div class="container-xl">
+    <div class="page-head"><div class="kicker">Matches</div><h1>Delete this match?</h1></div>
+    <div class="panel mb-4"><partial name="_MatchRow" model="Model" /></div>
+    <form method="post" class="d-flex gap-2">
+        <button class="btn btn-red">Delete</button>
+        <a class="btn btn-ghost" asp-action="Details" asp-route-id="@Model.Id">Cancel</a>
+    </form>
+</div>
