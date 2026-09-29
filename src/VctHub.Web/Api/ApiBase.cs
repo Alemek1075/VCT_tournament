@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 namespace VctHub.Web.Api;
 
 [ApiController]
-[Produces("application/json")]
 public abstract class ApiBase : ControllerBase
 {
     public const int MaxLimit = 100;
