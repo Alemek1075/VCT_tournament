@@ -1,0 +1,30 @@
+# secrets
+.env
+.env.*
+!.env.example
+Tockens.txt
+*.pfx
+
+# .NET
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+coverage*/
+
+# node
+node_modules/
+dist/
+.vite/
+playwright-report/
+test-results/
+
+# hardhat
+contracts/artifacts/
+contracts/cache/
+contracts/typechain-types/
+
+# misc
+.DS_Store
+uploads/
