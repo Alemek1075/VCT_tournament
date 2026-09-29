@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using VctHub.Web.Data;
+using VctHub.Web.Live;
 using VctHub.Web.Services;
 
 DotEnv.Load();
@@ -26,6 +27,8 @@ builder.Services.AddControllersWithViews()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddProblemDetails();
 builder.Services.AddApiCache(config);
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<LiveService>();
 builder.Services.AddSingleton<SearchService>();
 builder.Services.AddSingleton<SearchIndexer>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<SearchIndexer>());
@@ -73,11 +76,14 @@ app.UseStaticFiles(); // wwwroot/uploads is written at runtime, MapStaticAssets 
 app.UseSwagger();
 app.UseSwaggerUI(o => o.DocumentTitle = "VCT Hub API");
 
+app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(20) });
 app.UseRouting();
 app.UseApiCache();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+app.MapLive();
+app.MapHub<LiveHub>("/hubs/live");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
