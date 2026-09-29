@@ -66,6 +66,10 @@ public class LiveService(IServiceScopeFactory scopes, IHubContext<LiveHub> hub, 
             0, 0, 1, Maps[rng.Next(Maps.Length)], 0, 0, "Match is live", "Live", Now());
         Publish(state);
 
+        if (MatchStarted is { } started)
+            try { await started(state); }
+            catch (Exception e) { log.LogWarning(e, "MatchStarted handler failed for {Id}", matchId); }
+
         var cts = new CancellationTokenSource();
         runs[matchId] = cts;
         _ = Task.Run(() => PlayAsync(state, cts.Token));
@@ -139,7 +143,8 @@ public class LiveService(IServiceScopeFactory scopes, IHubContext<LiveHub> hub, 
         _ = hub.Clients.Group(LiveHub.Group(s.MatchId)).SendAsync("state", s);
     }
 
-    /// <summary>Raised once a simulated series is over (B8 publishes it to the queue).</summary>
+    /// <summary>Raised when a simulation starts / once a series is over (B8 publishes both to the queue).</summary>
+    public event Func<LiveState, Task>? MatchStarted;
     public event Func<LiveState, Task>? MatchFinished;
 
     async Task FinishAsync(LiveState s)

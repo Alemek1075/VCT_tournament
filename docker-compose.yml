@@ -10,10 +10,23 @@ services:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       REDIS_URL: redis://redis:6379
       ELASTIC_URL: http://elastic:9200
+      RABBITMQ_URL: amqp://vct:vct@rabbitmq:5672
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_started }
       elastic: { condition: service_healthy }
+      rabbitmq: { condition: service_healthy }
+
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: vct
+      RABBITMQ_DEFAULT_PASS: vct
+    ports: ["5672:5672", "15672:15672"] # 15672 = management UI
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      retries: 10
 
   elastic:
     image: docker.elastic.co/elasticsearch/elasticsearch:9.1.5

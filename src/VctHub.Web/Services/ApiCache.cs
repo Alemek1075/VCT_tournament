@@ -44,7 +44,8 @@ public static class ApiCache
 
             await next();
 
-            var isWrite = !HttpMethods.IsGet(ctx.Request.Method) && !HttpMethods.IsHead(ctx.Request.Method);
+            var isWrite = !HttpMethods.IsGet(ctx.Request.Method) && !HttpMethods.IsHead(ctx.Request.Method)
+                          && !ctx.Request.Path.StartsWithSegments("/api/telegram");
             if (isWrite && ctx.Response.StatusCode < 400)
             {
                 await ctx.RequestServices.GetRequiredService<IOutputCacheStore>().EvictByTagAsync(Tag, default);

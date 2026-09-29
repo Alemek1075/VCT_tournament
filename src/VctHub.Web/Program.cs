@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using VctHub.Web.Data;
 using VctHub.Web.Live;
+using VctHub.Web.Messaging;
 using VctHub.Web.Services;
 
 DotEnv.Load();
@@ -29,6 +30,13 @@ builder.Services.AddProblemDetails();
 builder.Services.AddApiCache(config);
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<LiveService>();
+if (!string.IsNullOrWhiteSpace(config["RABBITMQ_URL"]))
+    builder.Services.AddSingleton<IMessageBus, RabbitMqBus>();
+else
+    builder.Services.AddSingleton<IMessageBus, InMemoryBus>();
+builder.Services.AddHttpClient<TelegramClient>(c => c.Timeout = TimeSpan.FromSeconds(40));
+builder.Services.AddSingleton<TelegramBot>();
+builder.Services.AddHostedService<MessagingWorker>();
 builder.Services.AddSingleton<SearchService>();
 builder.Services.AddSingleton<SearchIndexer>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<SearchIndexer>());
@@ -83,6 +91,15 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 app.MapLive();
+app.MapPost("/api/telegram/webhook", async (HttpContext ctx, TelegramBot bot, IConfiguration cfg) =>
+{
+    // Telegram echoes the secret we registered; anything else is not from Telegram
+    if (ctx.Request.Headers["X-Telegram-Bot-Api-Secret-Token"] != MessagingWorker.WebhookSecret(cfg)) return Results.Unauthorized();
+    var update = await System.Text.Json.Nodes.JsonNode.ParseAsync(ctx.Request.Body);
+    if (update != null) await bot.HandleUpdateAsync(update, ctx.RequestAborted);
+    return Results.Ok();
+}).ExcludeFromDescription();
+app.MapGet("/api/queue", (IMessageBus bus) => new { broker = bus.Kind });
 app.MapHub<LiveHub>("/hubs/live");
 app.MapControllerRoute(
     name: "default",
