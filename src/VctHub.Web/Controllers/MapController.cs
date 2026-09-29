@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
+using VctHub.Web.Services;
 using Microsoft.EntityFrameworkCore;
 using VctHub.Web.Data;
 using VctHub.Web.Models;
@@ -15,7 +17,7 @@ public class MapController(AppDbContext db) : Controller
         return View();
     }
 
-    [HttpGet("/api/map")]
+    [HttpGet("/api/map"), OutputCache(PolicyName = ApiCache.Policy)]
     public async Task<IActionResult> Data()
     {
         var matches = await db.Matches.AsNoTracking()

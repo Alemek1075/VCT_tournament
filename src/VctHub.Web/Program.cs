@@ -25,6 +25,7 @@ else
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddProblemDetails();
+builder.Services.AddApiCache(config);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o =>
 {
@@ -70,6 +71,7 @@ app.UseSwagger();
 app.UseSwaggerUI(o => o.DocumentTitle = "VCT Hub API");
 
 app.UseRouting();
+app.UseApiCache();
 app.UseAuthorization();
 
 app.MapStaticAssets();

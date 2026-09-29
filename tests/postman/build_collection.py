@@ -35,6 +35,8 @@ pm.test("five regions incl. EMEA", () => {
   pm.expect(r.map(x => x.code)).to.include("emea");
   pm.collectionVariables.set("regionId", r.find(x => x.code === "emea").id);
 });"""),
+    req("Same read again is served from cache", "GET", "/api/regions", OK + """
+pm.test("X-Cache: HIT", () => pm.expect(pm.response.headers.get("X-Cache")).to.eql("HIT"));"""),
     req("Teams page 1 (limit 5)", "GET", "/api/teams?limit=5", OK + """
 const p = pm.response.json();
 pm.test("page shape", () => {
@@ -110,6 +112,8 @@ pm.test("field errors", () => {
 pm.test("400 Bad Request", () => pm.response.to.have.status(400));
 pm.test("regionId error", () => pm.expect(pm.response.json().errors).to.have.property("regionId"));""",
         body={"name": "Nowhere FC", "tag": "NWH", "regionId": 424242}),
+    req("Write evicted the cache", "GET", "/api/regions", OK + """
+pm.test("X-Cache: MISS after a write", () => pm.expect(pm.response.headers.get("X-Cache")).to.eql("MISS"));"""),
     req("Get created team", "GET", "/api/teams/{{teamId}}", OK + """
 pm.test("same data", () => pm.expect(pm.response.json().city).to.eql("Kyiv"));"""),
     req("Update team", "PUT", "/api/teams/{{teamId}}", OK + """

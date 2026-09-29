@@ -48,6 +48,40 @@
           ]
         },
         {
+          "name": "Same read again is served from cache",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/regions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "regions"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"X-Cache: HIT\", () => pm.expect(pm.response.headers.get(\"X-Cache\")).to.eql(\"HIT\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Teams page 1 (limit 5)",
           "request": {
             "method": "GET",
@@ -641,6 +675,40 @@
                 "exec": [
                   "pm.test(\"400 Bad Request\", () => pm.response.to.have.status(400));",
                   "pm.test(\"regionId error\", () => pm.expect(pm.response.json().errors).to.have.property(\"regionId\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Write evicted the cache",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/regions",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "regions"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"200 OK\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"X-Cache: MISS after a write\", () => pm.expect(pm.response.headers.get(\"X-Cache\")).to.eql(\"MISS\"));"
                 ]
               }
             }

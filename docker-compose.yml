@@ -8,8 +8,14 @@ services:
       Seed__ImageBaseUrl: /seed-img/
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      REDIS_URL: redis://redis:6379
     depends_on:
       db: { condition: service_healthy }
+      redis: { condition: service_started }
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
 
   db:
     image: postgres:17-alpine

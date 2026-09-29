@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
+using VctHub.Web.Services;
 
 namespace VctHub.Web.Api;
 
 [ApiController]
+[OutputCache(PolicyName = ApiCache.Policy)] // only GET/HEAD are cached, writes evict (see ApiCache)
 public abstract class ApiBase : ControllerBase
 {
     public const int MaxLimit = 100;
