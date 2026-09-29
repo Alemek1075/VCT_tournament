@@ -1,0 +1,49 @@
+@section Head {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="~/css/map.css" asp-append-version="true" />
+}
+
+<div class="map-shell">
+    <aside class="map-panel">
+        <div class="kicker">VCT 2026 · world</div>
+        <h1 class="h2">Map</h1>
+
+        <label class="form-label mt-2" for="map-search">Find a team</label>
+        <input id="map-search" class="form-control" placeholder="Paper Rex, FNC…" autocomplete="off" />
+
+        <div class="form-label mt-3">Region</div>
+        <div class="chips" id="region-filter">
+            <button class="chip on" data-region="americas">Americas</button>
+            <button class="chip on" data-region="emea">EMEA</button>
+            <button class="chip on" data-region="pacific">Pacific</button>
+            <button class="chip on" data-region="china">China</button>
+        </div>
+
+        <div class="form-label mt-3">Show</div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="layer-teams" checked><label class="form-check-label" for="layer-teams">Team home bases</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="layer-events" checked><label class="form-check-label" for="layer-events">Event venues</label></div>
+        <div class="form-check"><input class="form-check-input" type="checkbox" id="only-winning"><label class="form-check-label" for="only-winning">Only teams with a winning record</label></div>
+
+        <div class="form-label mt-3 d-flex justify-content-between">
+            <span>Season timeline</span><span id="timeline-date" class="text-light"></span>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            <button class="btn btn-red btn-sm" id="play" type="button" aria-label="Play season">▶</button>
+            <input type="range" class="form-range" id="timeline" min="0" max="100" value="100" />
+        </div>
+        <div class="muted small" id="timeline-note">Venues light up while their event is running.</div>
+
+        <div class="form-label mt-3">Win rate of visible teams</div>
+        <div class="chart-box"><canvas id="region-chart" height="170"></canvas></div>
+        <div class="muted small mt-2" id="visible-count"></div>
+    </aside>
+    <div id="map" role="application" aria-label="Map of VCT teams and venues"></div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script src="~/js/map.js" asp-append-version="true"></script>
+}
