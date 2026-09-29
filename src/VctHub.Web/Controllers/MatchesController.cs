@@ -32,12 +32,13 @@ public class MatchesController(AppDbContext db) : Controller
 
     public async Task<IActionResult> Create(int? tournamentId)
     {
-        await FillLists();
-        return View(new Match
+        var m = new Match
         {
             TournamentId = tournamentId ?? 0,
             ScheduledAt = DateTime.UtcNow.Date.AddDays(1).AddHours(17),
-        });
+        };
+        await Hydrate(m);
+        return View(m);
     }
 
     [HttpPost, ValidateAntiForgeryToken]
@@ -46,7 +47,7 @@ public class MatchesController(AppDbContext db) : Controller
         Validate(m);
         if (!ModelState.IsValid)
         {
-            await FillLists();
+            await Hydrate(m);
             return View(m);
         }
         m.ScheduledAt = DateTime.SpecifyKind(m.ScheduledAt, DateTimeKind.Utc);
@@ -60,7 +61,6 @@ public class MatchesController(AppDbContext db) : Controller
     {
         var m = await Load(id);
         if (m is null) return NotFound();
-        await FillLists();
         return View(m);
     }
 
@@ -72,7 +72,7 @@ public class MatchesController(AppDbContext db) : Controller
         Validate(input);
         if (!ModelState.IsValid)
         {
-            await FillLists();
+            await Hydrate(input);
             return View(input);
         }
         m.TournamentId = input.TournamentId;
@@ -120,9 +120,11 @@ public class MatchesController(AppDbContext db) : Controller
             ModelState.AddModelError(nameof(Match.ScoreA), $"Best of {m.BestOf} ends at {toWin} maps");
     }
 
-    async Task FillLists()
+    // selects are autocomplete boxes; render just the currently chosen items
+    async Task Hydrate(Match m)
     {
-        ViewBag.Tournaments = new SelectList(await db.Tournaments.OrderByDescending(t => t.StartDate).ToListAsync(), "Id", "Name");
-        ViewBag.Teams = new SelectList(await db.Teams.OrderBy(t => t.Name).ToListAsync(), "Id", "Name");
+        m.Tournament ??= await db.Tournaments.FindAsync(m.TournamentId);
+        m.TeamA ??= await db.Teams.FindAsync(m.TeamAId);
+        m.TeamB ??= await db.Teams.FindAsync(m.TeamBId);
     }
 }

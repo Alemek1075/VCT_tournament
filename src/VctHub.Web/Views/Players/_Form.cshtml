@@ -16,8 +16,8 @@
     </div>
     <div class="col-md-4">
         <label asp-for="TeamId" class="form-label"></label>
-        <select asp-for="TeamId" asp-items="ViewBag.Teams" class="form-select">
-            <option value="">— free agent —</option>
+        <select asp-for="TeamId" class="form-select" data-autocomplete="/api/lookup/teams" data-placeholder="Free agent - type a team">
+            @if (Model.Team != null) { <option value="@Model.Team.Id" selected>@Model.Team.Name</option> }
         </select>
     </div>
     <div class="col-md-3">
@@ -34,6 +34,13 @@
             <label asp-for="IsCaptain" class="form-check-label"></label>
         </div>
     </div>
+    <div class="col-md-6">
+        <label asp-for="RankedAccountId" class="form-label">Ranked account (1M+ accounts)</label>
+        <select asp-for="RankedAccountId" class="form-select" data-autocomplete="/api/lookup/ranked" data-placeholder="Search Riot ID, e.g. jett">
+            @if (Model.RankedAccount != null) { <option value="@Model.RankedAccount.Id" selected>@Model.RankedAccount.RiotId</option> }
+        </select>
+    </div>
+    <div class="col-md-6"></div>
     <div class="col-md-6">
         <label class="form-label" for="photoFile">Photo file</label>
         <input type="file" name="photoFile" id="photoFile" class="form-control" accept="image/png,image/jpeg,image/webp" />

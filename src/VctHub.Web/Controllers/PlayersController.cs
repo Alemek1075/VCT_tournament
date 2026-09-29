@@ -43,8 +43,9 @@ public class PlayersController(AppDbContext db, IFileStorage storage) : Controll
 
     public async Task<IActionResult> Create(int? teamId)
     {
-        await FillLists();
-        return View(new Player { TeamId = teamId });
+        var player = new Player { TeamId = teamId };
+        await Hydrate(player);
+        return View(player);
     }
 
     [HttpPost, ValidateAntiForgeryToken]
@@ -53,7 +54,7 @@ public class PlayersController(AppDbContext db, IFileStorage storage) : Controll
         await SaveUpload(player, photoFile);
         if (!ModelState.IsValid)
         {
-            await FillLists();
+            await Hydrate(player);
             return View(player);
         }
         db.Add(player);
@@ -66,7 +67,7 @@ public class PlayersController(AppDbContext db, IFileStorage storage) : Controll
     {
         var player = await db.Players.Include(p => p.Team).Include(p => p.RankedAccount).FirstOrDefaultAsync(p => p.Id == id);
         if (player is null) return NotFound();
-        await FillLists();
+        await Hydrate(player);
         return View(player);
     }
 
@@ -81,7 +82,7 @@ public class PlayersController(AppDbContext db, IFileStorage storage) : Controll
         await SaveUpload(player, photoFile);
         if (!ModelState.IsValid)
         {
-            await FillLists();
+            await Hydrate(player);
             return View(player);
         }
         await db.SaveChangesAsync();
@@ -113,9 +114,11 @@ public class PlayersController(AppDbContext db, IFileStorage storage) : Controll
         catch (InvalidOperationException e) { ModelState.AddModelError("photoFile", e.Message); }
     }
 
-    async Task FillLists()
+    // team / ranked account are autocomplete boxes: only the chosen option is rendered
+    async Task Hydrate(Player p)
     {
-        ViewBag.Teams = new SelectList(await db.Teams.OrderBy(t => t.Name).ToListAsync(), nameof(Team.Id), nameof(Team.Name));
         ViewBag.Roles = new SelectList(Roles);
+        p.Team ??= p.TeamId is { } tid ? await db.Teams.FindAsync(tid) : null;
+        p.RankedAccount ??= p.RankedAccountId is { } rid ? await db.RankedAccounts.FindAsync(rid) : null;
     }
 }

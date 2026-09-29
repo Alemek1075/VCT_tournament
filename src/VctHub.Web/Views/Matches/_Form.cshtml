@@ -4,7 +4,9 @@
     <input type="hidden" asp-for="Id" />
     <div class="col-md-6">
         <label asp-for="TournamentId" class="form-label"></label>
-        <select asp-for="TournamentId" asp-items="ViewBag.Tournaments" class="form-select"></select>
+        <select asp-for="TournamentId" class="form-select" required data-autocomplete="/api/lookup/tournaments" data-placeholder="Type an event, e.g. Champions">
+            @if (Model.Tournament != null) { <option value="@Model.Tournament.Id" selected>@Model.Tournament.Name</option> }
+        </select>
     </div>
     <div class="col-md-3">
         <label asp-for="Series" class="form-label"></label>
@@ -16,7 +18,9 @@
     </div>
     <div class="col-md-5">
         <label asp-for="TeamAId" class="form-label"></label>
-        <select asp-for="TeamAId" asp-items="ViewBag.Teams" class="form-select team-select"></select>
+        <select asp-for="TeamAId" class="form-select" required data-autocomplete="/api/lookup/teams">
+            @if (Model.TeamA != null) { <option value="@Model.TeamA.Id" selected>@Model.TeamA.Name</option> }
+        </select>
     </div>
     <div class="col-md-1">
         <label asp-for="ScoreA" class="form-label"></label>
@@ -28,7 +32,9 @@
     </div>
     <div class="col-md-5">
         <label asp-for="TeamBId" class="form-label"></label>
-        <select asp-for="TeamBId" asp-items="ViewBag.Teams" class="form-select team-select"></select>
+        <select asp-for="TeamBId" class="form-select" required data-autocomplete="/api/lookup/teams">
+            @if (Model.TeamB != null) { <option value="@Model.TeamB.Id" selected>@Model.TeamB.Name</option> }
+        </select>
         <span asp-validation-for="TeamBId" class="field-validation-error"></span>
     </div>
     <div class="col-md-3">
