@@ -32,6 +32,7 @@
                 <li><a class="nav-link" asp-controller="Players" asp-action="Index">Players</a></li>
                 <li><a class="nav-link" asp-controller="Map" asp-action="Index">Map</a></li>
                 <li><a class="nav-link" href="@(User.Identity?.IsAuthenticated == true ? "/docs" : "/docs/local")">Docs</a></li>
+                <li><a class="nav-link" href="/board">Board</a></li>
             </ul>
             <form class="d-flex me-2" action="/search" role="search">
                 <input class="form-control form-control-sm" name="q" placeholder="Search…" aria-label="Search" style="width:170px" />
