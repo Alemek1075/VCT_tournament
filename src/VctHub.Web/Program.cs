@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using VctHub.Web.Data;
+using VctHub.Web.Agent;
 using VctHub.Web.Docs;
 using VctHub.Web.Live;
 using VctHub.Web.Messaging;
@@ -31,6 +32,7 @@ builder.Services.AddControllersWithViews(o => o.Conventions.Add(new WriteAccessC
 builder.Services.AddProblemDetails();
 builder.Services.AddApiCache(config);
 builder.Services.AddSignalR(o => o.MaximumReceiveMessageSize = 512 * 1024); // board strokes / dropped images
+builder.Services.AddAgent();
 builder.Services.AddSingleton<LiveService>();
 builder.Services.AddSingleton<DocSessions>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<DocSessions>());
@@ -93,10 +95,12 @@ app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSecond
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
 app.UseApiCache(); // after auth: signed-in requests must never be served from the shared cache
 
 app.MapStaticAssets();
 app.MapLive();
+app.MapAgent();
 app.MapPost("/api/telegram/webhook", async (HttpContext ctx, TelegramBot bot, IConfiguration cfg) =>
 {
     // Telegram echoes the secret we registered; anything else is not from Telegram
