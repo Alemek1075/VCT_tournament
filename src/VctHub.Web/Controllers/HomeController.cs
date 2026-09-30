@@ -21,6 +21,9 @@ public class HomeController(AppDbContext db) : Controller
         return View(vm);
     }
 
+    [HttpGet("/privacy")]
+    public IActionResult Privacy() => View();
+
     [HttpGet("/search")]
     public IActionResult Search() => View();
 
