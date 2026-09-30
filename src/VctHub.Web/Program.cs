@@ -30,7 +30,7 @@ builder.Services.AddControllersWithViews(o => o.Conventions.Add(new WriteAccessC
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddProblemDetails();
 builder.Services.AddApiCache(config);
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(o => o.MaximumReceiveMessageSize = 512 * 1024); // board strokes / dropped images
 builder.Services.AddSingleton<LiveService>();
 builder.Services.AddSingleton<DocSessions>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<DocSessions>());
@@ -108,6 +108,7 @@ app.MapPost("/api/telegram/webhook", async (HttpContext ctx, TelegramBot bot, IC
 app.MapGet("/api/queue", (IMessageBus bus) => new { broker = bus.Kind });
 app.MapHub<LiveHub>("/hubs/live");
 app.MapHub<DocHub>("/hubs/docs");
+app.MapHub<VctHub.Web.Board.BoardHub>("/hubs/board");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
