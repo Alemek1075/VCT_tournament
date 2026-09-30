@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using VctHub.Web.Data;
+using VctHub.Web.Docs;
 using VctHub.Web.Live;
 using VctHub.Web.Messaging;
 using VctHub.Web.Services;
@@ -31,6 +32,8 @@ builder.Services.AddProblemDetails();
 builder.Services.AddApiCache(config);
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<LiveService>();
+builder.Services.AddSingleton<DocSessions>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<DocSessions>());
 if (!string.IsNullOrWhiteSpace(config["RABBITMQ_URL"]))
     builder.Services.AddSingleton<IMessageBus, RabbitMqBus>();
 else
@@ -104,6 +107,7 @@ app.MapPost("/api/telegram/webhook", async (HttpContext ctx, TelegramBot bot, IC
 }).ExcludeFromDescription();
 app.MapGet("/api/queue", (IMessageBus bus) => new { broker = bus.Kind });
 app.MapHub<LiveHub>("/hubs/live");
+app.MapHub<DocHub>("/hubs/docs");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
