@@ -28,3 +28,5 @@ contracts/typechain-types/
 # misc
 .DS_Store
 uploads/
+e2e/report/
+e2e/test-results/
