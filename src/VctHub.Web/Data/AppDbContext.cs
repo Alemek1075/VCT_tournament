@@ -1,10 +1,18 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using VctHub.Web.Models;
+using VctHub.Web.Services;
 
 namespace VctHub.Web.Data;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options, ICurrentTenant? tenant = null)
+    : IdentityDbContext<AppUser>(options)
 {
+    /// <summary>Read by the tenant query filter on every query (B5). -1 = nobody signed in = sees nothing.</summary>
+    public int CurrentTenantId => tenant?.TenantId ?? -1;
+
+    public DbSet<Tenant> Tenants => Set<Tenant>();
+    public DbSet<StrategyDoc> StrategyDocs => Set<StrategyDoc>();
     public DbSet<Region> Regions => Set<Region>();
     public DbSet<Team> Teams => Set<Team>();
     public DbSet<Player> Players => Set<Player>();
@@ -61,6 +69,22 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             e.HasIndex(x => new { x.ChatId, x.TeamId }).IsUnique();
             e.HasOne(x => x.Team).WithMany().OnDelete(DeleteBehavior.Cascade);
+        });
+
+        b.Entity<Tenant>(e =>
+        {
+            e.HasIndex(t => t.Slug).IsUnique();
+            e.HasIndex(t => t.InviteCode).IsUnique();
+            e.Property(t => t.Plan).HasConversion<string>().HasMaxLength(12);
+            e.HasMany(t => t.Members).WithOne(u => u.Tenant).HasForeignKey(u => u.TenantId).OnDelete(DeleteBehavior.Restrict);
+        });
+
+        b.Entity<StrategyDoc>(e =>
+        {
+            e.HasOne<Tenant>().WithMany().HasForeignKey(d => d.TenantId).OnDelete(DeleteBehavior.Cascade);
+            e.Property(d => d.BlocksJson).HasColumnType("jsonb");
+            // B5: rows of other tenants simply don't exist for this DbContext
+            e.HasQueryFilter(d => d.TenantId == CurrentTenantId);
         });
 
         b.Entity<RankedAccount>(e =>
