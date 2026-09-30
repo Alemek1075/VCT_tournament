@@ -24,7 +24,8 @@ if (!string.IsNullOrEmpty(config["SUPABASE_SECRET_KEY"]))
 else
     builder.Services.AddSingleton<IFileStorage, LocalFileStorage>();
 
-builder.Services.AddControllersWithViews()
+builder.Services.AddVctAuth(config);
+builder.Services.AddControllersWithViews(o => o.Conventions.Add(new WriteAccessConvention()))
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddProblemDetails();
 builder.Services.AddApiCache(config);
@@ -64,6 +65,7 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await db.Database.MigrateAsync();
     await scope.ServiceProvider.GetRequiredService<Seeder>().RunAsync();
+    await IdentitySeed.RunAsync(scope.ServiceProvider);
 }
 
 app.UseForwardedHeaders();
@@ -86,8 +88,9 @@ app.UseSwaggerUI(o => o.DocumentTitle = "VCT Hub API");
 
 app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(20) });
 app.UseRouting();
-app.UseApiCache();
+app.UseAuthentication();
 app.UseAuthorization();
+app.UseApiCache(); // after auth: signed-in requests must never be served from the shared cache
 
 app.MapStaticAssets();
 app.MapLive();

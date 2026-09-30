@@ -1,0 +1,70 @@
+@model Tenant
+@{ ViewData["Title"] = Model.Name; }
+<div class="container-xl">
+    <div class="page-head d-flex flex-wrap align-items-end gap-3">
+        <div class="me-auto">
+            <div class="kicker">Workspace · @(Model.Plan == Plan.Premium ? "Premium" : "Free plan")</div>
+            <h1>@Model.Name</h1>
+            <p class="muted mb-0">Docs and boards created here are visible only to the members below.</p>
+        </div>
+        <form method="post" asp-action="Logout"><button class="btn btn-ghost">Sign out</button></form>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <h2 class="h4">Members</h2>
+            <div class="panel mb-4">
+                @foreach (var m in Model.Members.OrderBy(m => m.CreatedAt))
+                {
+                    <div class="d-flex align-items-center gap-3 p-3 border-bottom">
+                        @if (m.AvatarUrl != null) { <img src="@m.AvatarUrl" alt="" width="36" height="36" style="border-radius:50%" referrerpolicy="no-referrer" /> }
+                        else { <span class="brand-mark" style="width:36px;height:36px">@m.DisplayName.FirstOrDefault()</span> }
+                        <span class="flex-grow-1"><strong>@m.DisplayName</strong><br /><span class="muted small">@m.Email</span></span>
+                        <span class="muted small">since @m.CreatedAt.ToString("MMM d")</span>
+                    </div>
+                }
+            </div>
+
+            <h2 class="h4">Invite teammates</h2>
+            <div class="panel p-3 mb-4">
+                <div class="muted small">Invite code</div>
+                <div class="display fs-2 fw-bold" id="code">@Model.InviteCode</div>
+                <div class="muted small mb-2">or send this link:</div>
+                <input class="form-control" readonly value="@($"{Context.Request.Scheme}://{Context.Request.Host}/account/register?invite={Model.InviteCode}")" onclick="this.select()" />
+            </div>
+
+            <h2 class="h4">Join another workspace</h2>
+            <form method="post" asp-action="Join" class="d-flex gap-2">
+                <input class="form-control text-uppercase" name="inviteCode" placeholder="Invite code" required />
+                <button class="btn btn-ghost">Join</button>
+            </form>
+        </div>
+
+        <div class="col-lg-5">
+            <h2 class="h4">Plan</h2>
+            <div class="plan-card @(Model.Plan == Plan.Premium ? "premium" : "")">
+                <div class="kicker">@(Model.Plan == Plan.Premium ? "You're on Premium" : "Free")</div>
+                <ul class="list-unstyled my-3">
+                    <li>✓ All public stats, map, live matches</li>
+                    <li>✓ Private strategy docs &amp; tactical boards</li>
+                    <li class="@(Model.Plan == Plan.Premium ? "" : "muted")">@(Model.Plan == Plan.Premium ? "✓" : "✕") Premium analytics: head-to-head, breakout players</li>
+                    <li class="@(Model.Plan == Plan.Premium ? "" : "muted")">@(Model.Plan == Plan.Premium ? "✓" : "✕") CSV export of player stats</li>
+                </ul>
+                <form method="post" asp-action="ChangePlan">
+                    @if (Model.Plan == Plan.Premium)
+                    {
+                        <input type="hidden" name="plan" value="Free" />
+                        <a class="btn btn-red" asp-controller="Premium" asp-action="Index">Open Premium analytics</a>
+                        <button class="btn btn-ghost ms-2">Downgrade</button>
+                    }
+                    else
+                    {
+                        <input type="hidden" name="plan" value="Premium" />
+                        <button class="btn btn-red" data-track="upgrade">Upgrade to Premium (demo, free)</button>
+                    }
+                </form>
+            </div>
+            <p class="muted small mt-2">Strategy docs in this workspace: @ViewBag.Docs @(ViewBag.IsAdmin == true ? "· you are a site admin" : "")</p>
+        </div>
+    </div>
+</div>

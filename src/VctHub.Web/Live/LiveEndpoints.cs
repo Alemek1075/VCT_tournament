@@ -67,8 +67,8 @@ public static class LiveEndpoints
         {
             try { return Results.Ok(await live.StartAsync(id)); }
             catch (KeyNotFoundException e) { return Results.Problem(e.Message, statusCode: 404); }
-        });
-        api.MapPost("/{id:int}/stop", (int id, LiveService live) => { live.Stop(id); return Results.NoContent(); });
+        }).RequireAuthorization();
+        api.MapPost("/{id:int}/stop", (int id, LiveService live) => { live.Stop(id); return Results.NoContent(); }).RequireAuthorization();
 
         // 5. raw WebSocket: server pushes a JSON frame per change, client can send "ping"
         app.Map("/ws/live/{id:int}", async (int id, HttpContext ctx, LiveService live) =>

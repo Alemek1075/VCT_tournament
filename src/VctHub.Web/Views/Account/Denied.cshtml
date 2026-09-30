@@ -1,0 +1,7 @@
+@{ ViewData["Title"] = "Access denied"; Context.Response.StatusCode = 403; }
+<div class="container-xl py-5">
+    <div class="kicker text-danger display fs-5">403</div>
+    <h1>Not for your role</h1>
+    <p class="muted">Deleting data is limited to site admins. Editing only needs a signed-in account.</p>
+    <a class="btn btn-red" href="/">Back to home</a>
+</div>

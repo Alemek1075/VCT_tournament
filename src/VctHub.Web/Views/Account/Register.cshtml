@@ -1,0 +1,48 @@
+@model RegisterInput
+@{ ViewData["Title"] = "Create account"; }
+<div class="container-xl">
+    <div class="auth-box">
+        <div class="kicker">VCT Hub account</div>
+        <h1>Create account</h1>
+        @if (ViewBag.Google == true)
+        {
+            <form method="post" asp-action="External" class="mb-3">
+                <input type="hidden" name="provider" value="Google" />
+                <button class="btn btn-google w-100" type="submit">Sign up with Google</button>
+            </form>
+            <div class="or"><span>or with email</span></div>
+        }
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors mb-2"></div>
+            <div class="mb-3">
+                <label asp-for="DisplayName" class="form-label"></label>
+                <input asp-for="DisplayName" class="form-control" autocomplete="name" />
+                <span asp-validation-for="DisplayName" class="field-validation-error"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" autocomplete="email" />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label">Password (8+ characters)</label>
+                <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="field-validation-error"></span>
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col-7">
+                    <label asp-for="Workspace" class="form-label"></label>
+                    <input asp-for="Workspace" class="form-control" placeholder="e.g. Fnatic coaching staff" />
+                </div>
+                <div class="col-5">
+                    <label asp-for="InviteCode" class="form-label"></label>
+                    <input asp-for="InviteCode" class="form-control text-uppercase" placeholder="A1B2C3D4" />
+                </div>
+                <div class="muted small">A workspace keeps your strategy docs and boards private. Got an invite code from a teammate? Use it to join their workspace instead.</div>
+            </div>
+            <button class="btn btn-red w-100">Create account</button>
+        </form>
+        <p class="muted mt-3">Already registered? <a asp-action="Login" class="text-danger">Sign in</a></p>
+    </div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
