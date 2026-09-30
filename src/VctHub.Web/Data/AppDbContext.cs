@@ -13,6 +13,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ICurrentTenant
 
     public DbSet<Tenant> Tenants => Set<Tenant>();
     public DbSet<StrategyDoc> StrategyDocs => Set<StrategyDoc>();
+    public DbSet<AimScore> AimScores => Set<AimScore>();
     public DbSet<Region> Regions => Set<Region>();
     public DbSet<Team> Teams => Set<Team>();
     public DbSet<Player> Players => Set<Player>();
@@ -86,6 +87,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, ICurrentTenant
             // B5: rows of other tenants simply don't exist for this DbContext
             e.HasQueryFilter(d => d.TenantId == CurrentTenantId);
         });
+
+        b.Entity<AimScore>().HasIndex(a => new { a.Mode, a.Score });
 
         b.Entity<RankedAccount>(e =>
         {

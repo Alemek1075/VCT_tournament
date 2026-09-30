@@ -216,3 +216,17 @@ public class TelegramSubscription
     public Team? Team { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
+
+/// <summary>F6: one finished aim-trainer round.</summary>
+public class AimScore
+{
+    public int Id { get; set; }
+    [StringLength(20)] public string Mode { get; set; } = "gridshot";
+    [StringLength(60)] public string Player { get; set; } = "";
+    [StringLength(450)] public string? UserId { get; set; }
+    public int Score { get; set; }
+    public int Hits { get; set; }
+    public int Misses { get; set; }
+    public int AvgReactionMs { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
