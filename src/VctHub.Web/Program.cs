@@ -89,6 +89,15 @@ app.UseWhen(c => !c.Request.Path.StartsWithSegments("/api"),
 var seedImg = Path.Combine(Seeder.SeedDir(app.Environment, config), "img");
 if (Directory.Exists(seedImg))
     app.UseStaticFiles(new StaticFileOptions { FileProvider = new PhysicalFileProvider(seedImg), RequestPath = "/seed-img" });
+// F5: the React SPA (separate project in /spa) is served from its build output under /spa
+var spaDir = config["Spa:Dir"] ?? Path.GetFullPath(Path.Combine(app.Environment.ContentRootPath, "..", "..", "spa", "dist"));
+if (Directory.Exists(spaDir))
+{
+    var spaFiles = new PhysicalFileProvider(spaDir);
+    app.UseDefaultFiles(new DefaultFilesOptions { FileProvider = spaFiles, RequestPath = "/spa" });
+    app.UseStaticFiles(new StaticFileOptions { FileProvider = spaFiles, RequestPath = "/spa" });
+}
+app.MapGet("/api/spa-config", (IConfiguration c) => new { msalClientId = c["MSAL_CLIENT_ID"] }).ExcludeFromDescription();
 app.UseStaticFiles(); // wwwroot/uploads is written at runtime, MapStaticAssets only knows build-time files
 
 app.UseSwagger();
