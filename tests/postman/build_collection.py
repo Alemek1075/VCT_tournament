@@ -10,7 +10,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 NUMERIC_VARS = ["regionId", "teamId", "tournamentId"]
 
 
-def req(name, method, path, tests, body=None, pre=None):
+def req(name, method, path, tests, body=None, pre=None, noauth=False):
     url = {"raw": "{{baseUrl}}" + path, "host": ["{{baseUrl}}"],
            "path": [p for p in path.split("?")[0].split("/") if p]}
     if "?" in path:
@@ -20,6 +20,8 @@ def req(name, method, path, tests, body=None, pre=None):
          "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": tests.strip().split("\n")}}]}
     if body is not None:
         r["request"]["body"] = {"mode": "raw", "raw": body if isinstance(body, str) else json.dumps(body, indent=2)}
+    if noauth:
+        r["request"]["auth"] = {"type": "noauth"}
     if pre:
         r["event"].append({"listen": "prerequest", "script": {"type": "text/javascript", "exec": pre.strip().split("\n")}})
     return r
@@ -93,6 +95,16 @@ pm.test("problem+json", () => pm.expect(pm.response.headers.get("Content-Type"))
 
 MATCH = {"tournamentId": "{{tournamentId}}", "teamAId": "{{teamId}}", "teamBId": 1,
          "scheduledAt": "2026-10-10T15:00:00Z", "status": "Upcoming", "bestOf": 3}
+
+AUTH = [
+    req("Login as admin (JWT)", "POST", "/api/auth/token", OK + """
+const t = pm.response.json();
+pm.test("bearer token", () => { pm.expect(t.tokenType).to.eql("Bearer"); pm.expect(t.accessToken.split(".")).to.have.lengthOf(3); });
+pm.collectionVariables.set("token", t.accessToken);""", body={"email": "{{adminEmail}}", "password": "{{adminPassword}}"}),
+    req("Write without token -> 401", "POST", "/api/teams",
+        'pm.test("401", () => pm.response.to.have.status(401));',
+        body={"name": "No Token FC", "tag": "NTF", "regionId": 1}, noauth=True),
+]
 
 WRITE = [
     req("Create team", "POST", "/api/teams", """
@@ -169,10 +181,11 @@ CLEANUP = [
 collection = {
     "info": {"name": "VCT Hub API", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
              "description": "CRUD + paging tests for the VCT Hub REST API (C5, B1, QA1)."},
-    "item": [{"name": "Read", "item": READ}, {"name": "Write", "item": WRITE}, {"name": "Cleanup", "item": CLEANUP}],
+    "item": [{"name": "Read", "item": READ}, {"name": "Auth", "item": AUTH}, {"name": "Write", "item": WRITE}, {"name": "Cleanup", "item": CLEANUP}],
+    "auth": {"type": "bearer", "bearer": [{"key": "token", "value": "{{token}}", "type": "string"}]},
     "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": [
         "pm.test('responds under 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));"]}}],
-    "variable": [{"key": k, "value": ""} for k in ["regionId", "teamId", "playerId", "matchId", "tournamentId", "nextLink", "firstTeam"]],
+    "variable": [{"key": k, "value": ""} for k in ["regionId", "teamId", "playerId", "matchId", "tournamentId", "nextLink", "firstTeam", "token"]],
 }
 
 text = json.dumps(collection, indent=2, ensure_ascii=False)
@@ -181,7 +194,12 @@ for v in NUMERIC_VARS:  # ids go into bodies as numbers, not strings
 with open(os.path.join(HERE, "vct-api.postman_collection.json"), "w", encoding="utf-8") as f:
     f.write(text)
 
-for name, url in [("local", "http://localhost:8080"), ("dev", "http://localhost:5175")]:
+# local = docker compose stack, whose seeded admin is defined in docker-compose.yml
+for name, url in [("local", "http://localhost:8080")]:
     with open(os.path.join(HERE, f"{name}.postman_environment.json"), "w") as f:
-        json.dump({"name": name, "values": [{"key": "baseUrl", "value": url, "enabled": True}]}, f, indent=2)
+        json.dump({"name": name, "values": [
+            {"key": "baseUrl", "value": url, "enabled": True},
+            {"key": "adminEmail", "value": "admin@vct.local", "enabled": True},
+            {"key": "adminPassword", "value": "local-admin-123", "enabled": True},
+        ]}, f, indent=2)
 print("collection written")

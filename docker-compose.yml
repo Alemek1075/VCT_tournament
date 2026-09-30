@@ -11,6 +11,9 @@ services:
       REDIS_URL: redis://redis:6379
       ELASTIC_URL: http://elastic:9200
       RABBITMQ_URL: amqp://vct:vct@rabbitmq:5672
+      # throwaway admin for the local / CI stack only (Postman tests log in with it)
+      SEED_ADMIN_EMAIL: admin@vct.local
+      SEED_ADMIN_PASSWORD: local-admin-123
     depends_on:
       db: { condition: service_healthy }
       redis: { condition: service_started }
