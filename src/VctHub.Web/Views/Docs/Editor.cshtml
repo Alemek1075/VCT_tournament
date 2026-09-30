@@ -1,0 +1,34 @@
+@model StrategyDoc
+@{
+    var live = Model.Id > 0;
+    var init = new { docId = Model.Id, title = Model.Title, blocks = System.Text.Json.JsonDocument.Parse(Model.BlocksJson).RootElement };
+}
+@section Head { <link rel="stylesheet" href="~/css/editor.css" asp-append-version="true" /> }
+
+<div class="container-xl editor-page">
+    <div class="editor-bar">
+        <a class="muted small" href="@(live ? "/docs" : "/")">← @(live ? User.FindFirst("tenant_name")?.Value : "Home")</a>
+        <span id="sync-status" class="tag"></span>
+        <span id="peers" class="d-flex align-items-center gap-1"></span>
+        <span class="ms-auto d-flex gap-2">
+            @if (live) { <a class="btn btn-ghost btn-sm" href="/docs/@(Model.Id).md">Download .md</a> }
+            else { <button class="btn btn-ghost btn-sm" id="export-md" type="button">Export .md</button> }
+            <label class="btn btn-ghost btn-sm mb-0">Import .md <input type="file" id="import-md" accept=".md,.txt,text/markdown" hidden /></label>
+        </span>
+    </div>
+
+    <div class="doc-title-wrap"><input id="doc-title" class="doc-title" aria-label="Document title" maxlength="120" /></div>
+    <div id="blocks" class="blocks" aria-label="Document"></div>
+    <p class="muted small mt-4">
+        Enter = new block · Backspace on an empty line = merge · drag ⠿ to reorder ·
+        @if (live) { <text>open this page on a second device to see live edits</text> }
+        else { <text>notes stay in this browser (localStorage). <a href="/account/login?ReturnUrl=/docs">Sign in</a> to share them with your workspace.</text> }
+    </p>
+</div>
+
+@section Scripts {
+    <script>window.EDITOR = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(init, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web)));</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+    @if (live) { <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script> }
+    <script src="~/js/editor.js" asp-append-version="true"></script>
+}

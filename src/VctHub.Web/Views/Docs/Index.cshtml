@@ -1,0 +1,25 @@
+@model List<StrategyDoc>
+<div class="container-xl">
+    <div class="page-head d-flex flex-wrap align-items-end gap-3">
+        <div class="me-auto">
+            <div class="kicker">@User.FindFirst("tenant_name")?.Value · private to this workspace</div>
+            <h1>Strategy docs</h1>
+        </div>
+        <form method="post" class="d-flex gap-2">
+            <input class="form-control" name="title" placeholder="New doc title, e.g. Bind vs PRX" />
+            <button class="btn btn-red text-nowrap">+ New doc</button>
+        </form>
+    </div>
+    <div class="panel">
+        @foreach (var d in Model)
+        {
+            <div class="d-flex align-items-center gap-3 p-3 border-bottom">
+                <a class="flex-grow-1" href="/docs/@d.Id"><strong>@d.Title</strong><br /><span class="muted small">edited @d.UpdatedAt.ToString("MMM d, HH:mm") UTC · v@(d.Version)</span></a>
+                <a class="btn btn-ghost btn-sm" href="/docs/@(d.Id).md">.md</a>
+                <form method="post" asp-action="Delete" asp-route-id="@d.Id" onsubmit="return confirm('Delete this doc?')"><button class="btn btn-ghost btn-sm">Delete</button></form>
+            </div>
+        }
+        @if (Model.Count == 0) { <p class="p-3 m-0 muted">No docs yet. Create the first game plan above.</p> }
+    </div>
+    <p class="muted small mt-3">Want notes without an account? <a href="/docs/local">Local notes</a> are kept in your browser only.</p>
+</div>

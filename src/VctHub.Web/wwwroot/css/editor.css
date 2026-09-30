@@ -1,0 +1,53 @@
+/* Block editor (C12–C14) */
+.editor-page { max-width: 860px; padding-top: 1.5rem; }
+.editor-bar { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }
+.doc-title-wrap { position: relative; margin: 2rem 0 1rem; }
+.doc-title { width: 100%; background: transparent; border: 0; color: var(--paper); font-family: "Barlow Condensed"; font-weight: 800; font-size: 3rem; text-transform: uppercase; outline: none; }
+
+.blocks { counter-reset: none; }
+.blk { position: relative; display: flex; align-items: flex-start; gap: .4rem; padding: .15rem .4rem .15rem 0; border-left: 3px solid transparent; transition: background .3s; }
+.blk .handle { opacity: 0; cursor: grab; color: var(--muted); user-select: none; width: 1.2rem; text-align: center; padding-top: .2rem; transition: opacity .15s; }
+.blk:hover .handle, .blk:focus-within .handle { opacity: 1; }
+.blk .content { flex: 1; min-height: 1.6em; outline: none; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+.blk .content:empty::before { content: attr(data-placeholder); color: #56636d; pointer-events: none; }
+.blk .content:not(:focus):empty::before { content: ""; }
+.blk[data-type="p"] .content:only-child:empty::before { content: attr(data-placeholder); }
+
+.blk[data-type="h1"] .content { font-family: "Barlow Condensed"; font-weight: 800; font-size: 2.2rem; text-transform: uppercase; line-height: 1.15; margin-top: .6rem; }
+.blk[data-type="h2"] .content { font-family: "Barlow Condensed"; font-weight: 700; font-size: 1.6rem; text-transform: uppercase; margin-top: .5rem; }
+.blk[data-type="h3"] .content { font-weight: 700; font-size: 1.2rem; margin-top: .3rem; }
+.blk[data-type="ul"] .content::before { content: "•"; color: var(--red); margin-right: .6rem; }
+.blk[data-type="ol"] .content::before { content: attr(data-n); }
+.blk[data-type="ol"]::after { content: attr(data-n); position: absolute; left: 1.6rem; top: .15rem; color: var(--red); font-weight: 700; }
+.blk[data-type="ol"] .content { padding-left: 1.6rem; }
+.blk[data-type="ol"] .content::before { content: none; }
+.blk[data-type="quote"] .content { border-left: 3px solid var(--red); padding-left: .9rem; color: #cfcac2; font-style: italic; }
+.blk[data-type="code"] .content { background: #0a1117; border: 1px solid var(--line); padding: .7rem .9rem; font-family: ui-monospace, Consolas, monospace; font-size: .9rem; margin: .3rem 0; }
+.blk[data-type="hr"] hr { flex: 1; border-color: var(--line); opacity: 1; margin: .9rem 0; outline: none; }
+.blk[data-type="hr"] hr:focus { border-color: var(--red); }
+.todo-box { margin-top: .35rem; background-color: var(--ink-2); border-color: var(--line); }
+.todo-box:checked { background-color: var(--teal); border-color: var(--teal); }
+.blk.done .content { text-decoration: line-through; color: var(--muted); }
+
+/* F3 drag and drop */
+.blk-ghost { opacity: .35; background: var(--ink-3); }
+.blk-chosen { background: var(--ink-2); }
+
+/* C14: someone else just changed this block */
+.blk.remote { animation: remote-flash 1.8s ease-out; border-left-color: var(--peer); }
+.blk.remote::before {
+    content: attr(data-who); position: absolute; right: 0; top: -1.1rem; font-size: .7rem; font-weight: 600;
+    background: var(--peer); color: var(--ink); padding: 0 .4rem; animation: fade-label 1.8s forwards; pointer-events: none;
+}
+@keyframes remote-flash { 0% { background: color-mix(in srgb, var(--peer) 30%, transparent); } 100% { background: transparent; } }
+@keyframes fade-label { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+.blk.leaving { opacity: 0; transform: translateX(20px); transition: opacity .25s, transform .25s; }
+
+/* C14: live cursor of another editor */
+.blk[data-cursor] { border-left-color: var(--cursor); }
+.blk[data-cursor]::after { content: attr(data-cursor-name); position: absolute; left: -3px; top: -1.05rem; font-size: .68rem; font-weight: 600; background: var(--cursor); color: var(--ink); padding: 0 .35rem; }
+.blk[data-type="ol"][data-cursor]::after { content: attr(data-cursor-name); }
+
+.peer { width: 26px; height: 26px; border-radius: 50%; background: var(--peer); color: var(--ink); display: inline-grid; place-items: center; font-weight: 700; font-size: .8rem; border: 2px solid var(--ink); margin-left: -6px; }
+
+@media (prefers-reduced-motion: reduce) { .blk.remote { animation: none; } }
