@@ -51,11 +51,15 @@ public class SupabaseFileStorage(HttpClient http, IConfiguration config) : IFile
         var ext = FileRules.CheckedExtension(file);
         var path = $"{folder}/{Guid.NewGuid():N}{ext}";
         using var content = new StreamContent(file.OpenReadStream());
-        content.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType ?? "application/octet-stream");
+        // content type from the checked extension, never from what the client claims
+        content.Headers.ContentType = new MediaTypeHeaderValue(ext switch
+        {
+            ".png" => "image/png", ".jpg" or ".jpeg" => "image/jpeg", ".webp" => "image/webp",
+            ".gif" => "image/gif", ".mp4" => "video/mp4", _ => "video/webm",
+        });
         using var req = new HttpRequestMessage(HttpMethod.Post, $"{url}/storage/v1/object/{bucket}/{path}") { Content = content };
         req.Headers.Add("apikey", key);
-        if (key.Count(c => c == '.') == 2) // legacy JWT service_role key also needs the bearer header
-            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", key);
+        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", key);
         req.Headers.Add("cache-control", "public, max-age=31536000");
         var res = await http.SendAsync(req, ct);
         if (!res.IsSuccessStatusCode)
