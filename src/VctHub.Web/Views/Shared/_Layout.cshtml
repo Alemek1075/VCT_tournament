@@ -35,6 +35,17 @@
             <form class="d-flex me-2" action="/search" role="search">
                 <input class="form-control form-control-sm" name="q" placeholder="Search…" aria-label="Search" style="width:170px" />
             </form>
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <feature name="@Features.PremiumStats">
+                    <a class="nav-link" href="/premium" style="color:var(--gold)">✨ Premium</a>
+                </feature>
+                <a class="btn btn-ghost btn-sm" href="/account/workspace" title="@User.FindFirst("tenant_name")?.Value">@User.FindFirst("display_name")?.Value</a>
+            }
+            else
+            {
+                <a class="btn btn-red btn-sm" href="/account/login">Sign in</a>
+            }
             @await RenderSectionAsync("NavRight", required: false)
         </div>
     </nav>
@@ -50,7 +61,7 @@
 
 <footer class="site-footer">
     <div class="container-xl">
-        <p>VCT Hub is a student project (KNU, Web-технології). Data: <a href="https://www.vlr.gg" rel="nofollow">vlr.gg</a>.</p>
+        <p>VCT Hub is a student project (KNU, Web-технології). Data: <a href="https://www.vlr.gg" rel="nofollow">vlr.gg</a>. <a href="/privacy">Privacy</a></p>
         <p class="legal">VCT Hub isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, VALORANT and all associated properties are trademarks or registered trademarks of Riot Games, Inc.</p>
     </div>
 </footer>

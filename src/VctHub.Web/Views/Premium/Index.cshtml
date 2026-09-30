@@ -1,0 +1,96 @@
+@model PremiumVm
+<div class="container-xl">
+    <div class="page-head d-flex flex-wrap align-items-end gap-3">
+        <div class="me-auto">
+            <div class="kicker">✨ Premium · @User.FindFirst("tenant_name")?.Value</div>
+            <h1>Premium analytics</h1>
+        </div>
+        <feature name="@Features.CsvExport">
+            <a class="btn btn-red" asp-action="Export" data-track="csv_export">Download CSV</a>
+        </feature>
+    </div>
+
+    <h2 class="h4">Head-to-head</h2>
+    <div class="panel p-3 mb-5">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-5"><label class="form-label" for="p1">Player 1</label><input class="form-control" id="p1" list="plist" value="aspas" /></div>
+            <div class="col-md-5"><label class="form-label" for="p2">Player 2</label><input class="form-control" id="p2" list="plist" value="Derke" /></div>
+            <div class="col-md-2"><button class="btn btn-red w-100" id="cmp">Compare</button></div>
+        </div>
+        <datalist id="plist"></datalist>
+        <div class="row mt-3">
+            <div class="col-lg-6"><canvas id="h2h" height="280"></canvas></div>
+            <div class="col-lg-6"><table class="table mt-3" id="h2h-table"></table></div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <h2 class="h4">Breakout players</h2>
+            <p class="muted small">Biggest rating jump from their first to their latest event (4+ maps each).</p>
+            <table class="table">
+                <thead><tr><th>Player</th><th class="text-end">From</th><th class="text-end">To</th><th class="text-end">Δ</th></tr></thead>
+                <tbody>
+                @foreach (var b in Model.Breakouts)
+                {
+                    <tr>
+                        <td><a asp-controller="Players" asp-action="Details" asp-route-id="@b.Id"><strong>@b.Nickname</strong></a> <span class="muted">@b.Team</span><br /><span class="muted small">@b.FromEvent → @b.ToEvent</span></td>
+                        <td class="text-end">@b.From</td><td class="text-end">@b.To</td>
+                        <td class="text-end" style="color:var(--teal)">+@(b.To - b.From)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-6">
+            <h2 class="h4">Most consistent</h2>
+            <p class="muted small">Lowest spread of rating across 3+ events, average 1.00 or better.</p>
+            <table class="table">
+                <thead><tr><th>Player</th><th class="text-end">Avg</th><th class="text-end">σ</th><th class="text-end">Events</th></tr></thead>
+                <tbody>
+                @foreach (var c in Model.Consistent)
+                {
+                    <tr>
+                        <td><a asp-controller="Players" asp-action="Details" asp-route-id="@c.Id"><strong>@c.Nickname</strong></a> <span class="muted">@c.Team</span></td>
+                        <td class="text-end">@c.Avg</td><td class="text-end">@c.StdDev</td><td class="text-end">@c.Events</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+(async () => {
+    const all = (await fetch('/api/players?limit=100&sort=name').then(r => r.json())).value;
+    let more = await fetch('/api/players?limit=100&skip=100&sort=name').then(r => r.json());
+    all.push(...more.value);
+    more = await fetch('/api/players?limit=100&skip=200&sort=name').then(r => r.json());
+    all.push(...more.value);
+    document.getElementById('plist').innerHTML = all.map(p => `<option value="${p.nickname}">${p.team ?? ''}</option>`).join('');
+    const keys = [['rating', 'Rating'], ['acs', 'ACS'], ['kd', 'K:D'], ['adr', 'ADR'], ['kast', 'KAST'], ['hs', 'HS%']];
+    let chart;
+    function compare() {
+        const find = n => all.find(p => p.nickname.toLowerCase() === n.trim().toLowerCase());
+        const a = find(document.getElementById('p1').value), b = find(document.getElementById('p2').value);
+        if (!a || !b) return;
+        // normalise each stat against the better of the two so the shapes are comparable
+        const norm = k => Math.max(a[k], b[k]) || 1;
+        const ds = (p, color) => ({ label: p.nickname, data: keys.map(([k]) => Math.round(100 * p[k] / norm(k))), borderColor: color, backgroundColor: color + '33' });
+        chart?.destroy();
+        chart = new Chart(document.getElementById('h2h'), {
+            type: 'radar', data: { labels: keys.map(k => k[1]), datasets: [ds(a, '#ff4655'), ds(b, '#3fd1b4')] },
+            options: { scales: { r: { min: 40, max: 100, ticks: { display: false }, grid: { color: '#2a3a49' }, angleLines: { color: '#2a3a49' }, pointLabels: { color: '#ece8e1' } } }, plugins: { legend: { labels: { color: '#ece8e1' } } } },
+        });
+        const cell = (x, y) => x > y ? `<strong style="color:var(--teal)">${x}</strong>` : x;
+        document.getElementById('h2h-table').innerHTML = `<tr><th></th><th class="text-end">${a.nickname}</th><th class="text-end">${b.nickname}</th></tr>` +
+            keys.map(([k, l]) => `<tr><td class="muted">${l}</td><td class="text-end">${cell(a[k], b[k])}</td><td class="text-end">${cell(b[k], a[k])}</td></tr>`).join('');
+    }
+    document.getElementById('cmp').addEventListener('click', compare);
+    compare();
+})();
+</script>
+}

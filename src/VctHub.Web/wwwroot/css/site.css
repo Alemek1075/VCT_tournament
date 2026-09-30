@@ -103,3 +103,14 @@ a { text-decoration: none; }
     background: linear-gradient(90deg, var(--ink) 35%, transparent), radial-gradient(circle at 85% 30%, rgba(255,70,85,.25), transparent 45%); }
 .hero .kicker { color: var(--red); font-family: "Barlow Condensed"; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; margin-bottom: .6rem; }
 .hero .lead { max-width: 60ch; }
+
+/* ---------- auth + plans */
+.auth-box { max-width: 420px; margin: 3rem auto; }
+.auth-box .kicker, .plan-card .kicker { color: var(--red); font-family: "Barlow Condensed"; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; }
+.btn-google { background: #fff; color: #1f1f1f; display: flex; align-items: center; justify-content: center; gap: .6rem; text-transform: none; font-family: "Barlow"; font-weight: 600; }
+.btn-google:hover { background: #e8e8e8; color: #1f1f1f; }
+.or { display: flex; align-items: center; gap: .8rem; color: var(--muted); font-size: .85rem; margin: 1rem 0; }
+.or::before, .or::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+.plan-card { background: var(--ink-2); border: 1px solid var(--line); padding: 1.5rem; }
+.plan-card.premium { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+.plan-card li { padding: .2rem 0; }
