@@ -1,9 +1,9 @@
 **/bin
 **/obj
 **/node_modules
+spa/dist
 .git
 .env
 Tockens.txt
 tests
-spa
 contracts
