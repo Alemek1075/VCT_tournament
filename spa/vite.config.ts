@@ -9,5 +9,5 @@ export default defineConfig({
     port: 5173,
     proxy: { '/api': 'http://localhost:5175' },
   },
-  build: { outDir: 'dist' },
+  build: { outDir: 'dist', sourcemap: true },  // maps let the E2E coverage report point at .tsx files
 })

@@ -1,0 +1,14 @@
+{
+  "name": "e2e",
+  "version": "1.0.0",
+  "description": "Playwright E2E tests for VCT Hub",
+  "scripts": {
+    "test": "playwright test",
+    "report": "npx monocart show-report report/index.html"
+  },
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "monocart-reporter": "^2.14.0"
+  }
+}
