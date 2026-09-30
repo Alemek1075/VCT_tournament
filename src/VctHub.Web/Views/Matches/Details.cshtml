@@ -1,5 +1,10 @@
 @model Match
-@{ ViewData["Title"] = $"{Model.TeamA?.Name} vs {Model.TeamB?.Name}"; }
+@inject IConfiguration Config
+@{
+    ViewData["Title"] = $"{Model.TeamA?.Name} vs {Model.TeamB?.Name}";
+    // B7: head-to-head comes from a Supabase Edge Function, not from this app
+    var h2hUrl = Config["H2H_URL"] ?? $"https://{Config["SUPABASE_PROJECT_REF"] ?? "ypuamnpalobfhbrllobg"}.supabase.co/functions/v1/h2h";
+}
 <div class="container-xl">
     <div class="page-head text-center">
         <div class="kicker"><a asp-controller="Tournaments" asp-action="Details" asp-route-id="@Model.TournamentId">@Model.Tournament?.Name</a> · @Model.Series</div>
@@ -35,11 +40,43 @@
             <a class="btn btn-ghost" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
         </div>
     </div>
+
+    <section class="panel mt-4" id="h2h" data-url="@h2hUrl?a=@Model.TeamA?.Slug&b=@Model.TeamB?.Slug" hidden>
+        <div class="d-flex justify-content-between align-items-baseline flex-wrap gap-2">
+            <h2 class="m-0">Head to head</h2>
+            <span class="muted small">Elo from every finished series · served by a serverless function</span>
+        </div>
+        <div class="h2h-bar my-3"><span id="h2h-a"></span><span id="h2h-b"></span></div>
+        <div class="d-flex justify-content-between flex-wrap gap-3">
+            <div><b id="h2h-elo-a"></b> <span class="muted small">Elo</span><div id="h2h-form-a" class="form-dots"></div></div>
+            <div class="text-center"><div class="display fs-3" id="h2h-record"></div><div class="muted small">previous meetings</div></div>
+            <div class="text-end"><b id="h2h-elo-b"></b> <span class="muted small">Elo</span><div id="h2h-form-b" class="form-dots"></div></div>
+        </div>
+        <ul class="list-unstyled small mt-3 mb-0" id="h2h-list"></ul>
+    </section>
 </div>
 
 @section Scripts {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
 <script>
+(async () => {
+    const box = document.getElementById('h2h');
+    try {
+        const r = await fetch(box.dataset.url).then(x => x.ok ? x.json() : Promise.reject(x.status));
+        const pa = Math.round(r.winChance.a * 100);
+        const $ = id => document.getElementById(id);
+        $('h2h-a').style.width = pa + '%'; $('h2h-a').textContent = `${r.teamA.tag} ${pa}%`;
+        $('h2h-b').style.width = (100 - pa) + '%'; $('h2h-b').textContent = `${100 - pa}% ${r.teamB.tag}`;
+        $('h2h-elo-a').textContent = r.teamA.elo; $('h2h-elo-b').textContent = r.teamB.elo;
+        $('h2h-record').textContent = `${r.record.a} – ${r.record.b}`;
+        const dots = f => f.map(x => `<i class="${x === 'W' ? 'w' : 'l'}">${x}</i>`).join('');
+        $('h2h-form-a').innerHTML = dots(r.teamA.form); $('h2h-form-b').innerHTML = dots(r.teamB.form);
+        $('h2h-list').innerHTML = r.meetings.slice(0, 5).map(m =>
+            `<li><a href="/Matches/Details/${m.matchId}">${m.scoreA}–${m.scoreB}</a> <span class="muted">${new Date(m.date).toLocaleDateString()} · ${m.event.replace(/</g, '&lt;')}</span></li>`).join('');
+        box.hidden = false;
+    } catch { /* the function is optional; the page works without it */ }
+})();
+
 (async () => {
     // C11: live score through SignalR (only does something while the match is being simulated)
     const hub = new signalR.HubConnectionBuilder().withUrl('/hubs/live').withAutomaticReconnect().build();
