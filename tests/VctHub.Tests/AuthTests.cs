@@ -168,6 +168,26 @@ public class AuthTests(AppFactory app)
     }
 
     [Fact]
+    public async Task Workspace_docs_are_invisible_to_other_tenants()
+    {
+        var (_, emailA, _) = await app.NewUserAsync(workspace: "Team A");
+        var (_, emailB, _) = await app.NewUserAsync(workspace: "Team B");
+        var a = app.CreateClient();
+        var b = app.CreateClient();
+        await PostFormAsync(a, "/account/login", "/account/login", new() { ["Email"] = emailA, ["Password"] = "user-pass-123" });
+        await PostFormAsync(b, "/account/login", "/account/login", new() { ["Email"] = emailB, ["Password"] = "user-pass-123" });
+
+        var created = await PostFormAsync(a, "/docs", "/docs", new() { ["title"] = "Secret retake plan" });
+        var docUrl = created.RequestMessage!.RequestUri!.AbsolutePath; // followed the redirect to /docs/{id}
+        Assert.Matches(@"^/docs/\d+$", docUrl);
+
+        Assert.Equal(HttpStatusCode.OK, (await a.GetAsync(docUrl)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await b.GetAsync(docUrl)).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await b.GetAsync(docUrl + ".md")).StatusCode);
+        Assert.DoesNotContain("Secret retake plan", await b.GetStringAsync("/docs"));
+    }
+
+    [Fact]
     public async Task Bad_invite_code_is_refused()
     {
         var res = await app.Raw().PostAsJsonAsync("/api/auth/register",
