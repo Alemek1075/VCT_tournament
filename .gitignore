@@ -30,3 +30,5 @@ contracts/typechain-types/
 uploads/
 e2e/report/
 e2e/test-results/
+contracts/artifacts/
+contracts/cache/
