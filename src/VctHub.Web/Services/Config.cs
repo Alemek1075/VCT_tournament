@@ -7,6 +7,8 @@ public static class DotEnv
 {
     public static void Load()
     {
+        // integration tests must never pick up real tokens (Telegram polling etc.) from a developer's .env
+        if (Environment.GetEnvironmentVariable("VCT_SKIP_DOTENV") == "1") return;
         var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
         while (dir != null && !File.Exists(Path.Combine(dir.FullName, ".env"))) dir = dir.Parent;
         if (dir == null) return;
