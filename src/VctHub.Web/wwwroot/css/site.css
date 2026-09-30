@@ -114,3 +114,13 @@ a { text-decoration: none; }
 .plan-card { background: var(--ink-2); border: 1px solid var(--line); padding: 1.5rem; }
 .plan-card.premium { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
 .plan-card li { padding: .2rem 0; }
+
+/* B7 head-to-head widget */
+.h2h-bar { display: flex; height: 30px; font-family: "Barlow Condensed", sans-serif; font-weight: 700; }
+.h2h-bar span { display: flex; align-items: center; padding: 0 .6rem; white-space: nowrap; overflow: hidden; transition: width .6s; }
+.h2h-bar span:first-child { background: var(--red); color: #fff; }
+.h2h-bar span:last-child { background: var(--ink-3); justify-content: flex-end; }
+.form-dots { display: flex; gap: 3px; margin-top: .3rem; }
+.form-dots i { font-style: normal; font-size: .7rem; font-weight: 700; width: 18px; height: 18px; display: grid; place-items: center; }
+.form-dots i.w { background: var(--teal, #3fd1b4); color: #0f1923; }
+.form-dots i.l { background: var(--ink-3); color: var(--muted); }
