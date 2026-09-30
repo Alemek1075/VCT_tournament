@@ -33,6 +33,9 @@ builder.Services.AddProblemDetails();
 builder.Services.AddApiCache(config);
 builder.Services.AddSignalR(o => o.MaximumReceiveMessageSize = 512 * 1024); // board strokes / dropped images
 builder.Services.AddAgent();
+builder.Services.AddMcpServer(o => o.ServerInfo = new() { Name = "vct-hub", Version = "1.0.0" })
+    .WithHttpTransport(o => o.Stateless = true)
+    .WithTools<VctMcpTools>();
 builder.Services.AddSingleton<LiveService>();
 builder.Services.AddSingleton<DocSessions>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<DocSessions>());
@@ -101,6 +104,7 @@ app.UseApiCache(); // after auth: signed-in requests must never be served from t
 app.MapStaticAssets();
 app.MapLive();
 app.MapAgent();
+app.MapMcp("/mcp").DisableAntiforgery(); // C22
 app.MapPost("/api/telegram/webhook", async (HttpContext ctx, TelegramBot bot, IConfiguration cfg) =>
 {
     // Telegram echoes the secret we registered; anything else is not from Telegram
