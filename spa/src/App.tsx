@@ -188,7 +188,7 @@ function TeamEdit() {
   const nav = useNavigate()
   const { me } = useAuth()
   const [regions, setRegions] = useState<Region[]>([])
-  const [form, setForm] = useState<TeamInput>({ name: '', tag: '', regionId: 1, country: '', city: '', logoUrl: '', website: '', twitter: '', description: '' })
+  const [form, setForm] = useState<TeamInput>({ name: '', tag: '', regionId: 1, country: null, city: null, logoUrl: null, website: null, twitter: null, description: null })
   const [errors, setErrors] = useState<Record<string, string[]>>({})
   const [msg, setMsg] = useState<string | null>(null)
   useEffect(() => {
