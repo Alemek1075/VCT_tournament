@@ -6,6 +6,7 @@ interface AuthState {
   loading: boolean
   login: (email: string, password: string) => Promise<void>
   logout: () => void
+  fromSession: () => Promise<void>
   isAdmin: boolean
 }
 
@@ -29,7 +30,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     token.set(r.accessToken)
     await refresh()
   }
+  const fromSession = async () => {
+    token.set(null)
+    token.set((await Api.sessionToken()).accessToken)
+    await refresh()
+  }
   const logout = () => { token.set(null); setMe(null) }
 
-  return <Ctx.Provider value={{ me, loading, login, logout, isAdmin: !!me?.roles.includes('Admin') }}>{children}</Ctx.Provider>
+  return <Ctx.Provider value={{ me, loading, login, logout, fromSession, isAdmin: !!me?.roles.includes('Admin') }}>{children}</Ctx.Provider>
 }

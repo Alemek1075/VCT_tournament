@@ -169,3 +169,28 @@ tbody tr:hover td { background: var(--ink-2); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
 }
+
+/* ---------- way back to the MVC site */
+.hub-link { display: inline-flex; align-items: center; gap: .35rem; font: 700 .9rem var(--f-head); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: .35rem .7rem; border: 1px solid var(--line); transition: color .2s, border-color .2s; }
+.hub-link:hover { color: var(--paper); border-color: var(--paper); }
+.hub-link svg { transition: transform .35s var(--ease); }
+.hub-link:hover svg { transform: translateX(-3px); }
+
+/* ---------- Google button (same as the MVC one) */
+.btn-google {
+  display: flex; align-items: center; gap: .9rem; padding: .35rem 1rem .35rem .35rem; background: var(--ink-2); color: var(--paper);
+  border: 1px solid var(--line); font-weight: 600; position: relative; isolation: isolate; overflow: hidden;
+  outline: 1px solid transparent; outline-offset: 4px; transition: color .3s var(--ease), border-color .3s, outline-offset .3s var(--ease), outline-color .3s, transform .15s var(--ease);
+}
+.btn-google::before { content: ""; position: absolute; inset: 0 -14px; z-index: -1; background: var(--paper); transform: translateX(-102%) skewX(-18deg); transition: transform .45s var(--ease); }
+.btn-google:hover { color: oklch(0.2 0.01 20); border-color: var(--paper); outline-color: var(--line); outline-offset: 2px; }
+.btn-google:hover::before { transform: translateX(0) skewX(-18deg); }
+.btn-google:active { transform: scale(.98); }
+.btn-google .g-tile { width: 38px; height: 38px; display: grid; place-items: center; background: oklch(0.99 0.003 80); transition: transform .45s var(--ease); }
+.btn-google:hover .g-tile { transform: rotate(-8deg) scale(1.06); }
+.btn-google .g-label { flex: 1; }
+.btn-google .g-arrow { font-weight: 700; transform: translateX(-6px); opacity: 0; transition: transform .4s var(--ease), opacity .3s; }
+.btn-google:hover .g-arrow { transform: none; opacity: 1; }
+.or { display: flex; align-items: center; gap: .8rem; color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; }
+.or::before, .or::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+@media (max-width: 760px) { .hub-link { font-size: 0; gap: 0; padding: .4rem; } }
