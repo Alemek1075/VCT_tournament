@@ -14,6 +14,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: [
     ['list'],
+    ...(process.env.CI ? [['github'] as const] : []), // failures show up as annotations on the run
     ['monocart-reporter', {
       name: 'VCT Hub E2E',
       outputFile: './report/index.html',
