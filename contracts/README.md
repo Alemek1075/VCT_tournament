@@ -32,6 +32,10 @@ Then put the printed address into `.env` as `PICKEM_ADDRESS=...` and restart the
 
 ## Sepolia (public testnet)
 
+Deployed: [`0xd94DC531F4dC5C2828F65BD6E3222dcd10a46e77`](https://sepolia.etherscan.io/address/0xd94DC531F4dC5C2828F65BD6E3222dcd10a46e77). The site reads it by default (`appsettings.json`), and `.github/workflows/pickem-sync.yml` runs `sync.js` every hour once the `DEPLOYER_KEY` repository secret is set.
+
+To deploy again:
+
 1. Make a new wallet only for this (never your main one) and put its key in `.env` as `DEPLOYER_KEY=...`.
 2. Get free test ETH from a Sepolia faucet.
 3. `npx hardhat run scripts/deploy.js --network sepolia`

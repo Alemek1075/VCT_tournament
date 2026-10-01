@@ -65,7 +65,7 @@ cd contracts && npx hardhat test     # смарт-контракт
 | B8 Черги | RabbitMQ: події матчів для Telegram, синхронізація з CRM | `Messaging/MessageBus.cs` |
 | B9 Кеш API | Output cache у Redis для GET-запитів API | `Services/ApiCache.cs` |
 | C19 Статика | Фото й логотипи в Supabase Storage (CDN) | `Services/FileStorage.cs` |
-| C20 Web3 | Pick'em на Solidity: прогнози на матчі, очки за правильні, таблиця лідерів; сторінка на web3.js + MetaMask | `contracts/`, `/pickem` |
+| C20 Web3 | Pick'em на Solidity: прогнози на матчі, очки за правильні, таблиця лідерів; сторінка на web3.js + MetaMask. Контракт у Sepolia, синхронізація з сайтом щогодини через GitHub Actions | `contracts/`, `/pickem` |
 | C21 ШІ-агент | Чат з Gemini, відповідь стрімиться через SSE, видно виклики інструментів | `/agent`, `Agent/` |
 | C22 MCP | MCP-сервер на `/mcp`: 5 інструментів на читання (`search`, `get_team`, `get_player`, `list_matches`, `top_players`) і 1 на запис (`create_strategy_doc`) | `Agent/VctMcpServer.cs` |
 | C17, QA4 | Окремо, не в цьому репозиторії | |
