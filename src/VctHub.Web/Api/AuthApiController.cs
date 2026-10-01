@@ -41,6 +41,18 @@ public class AuthApiController(UserManager<AppUser> users, SignInManager<AppUser
         return StatusCode(201, new TokenResponse(tokens.Create(principal), "Bearer", (int)TokenService.Lifetime.TotalSeconds));
     }
 
+    /// <summary>Swap the website cookie (e.g. after Google sign-in) for a Bearer token. Same-origin only:
+    /// the cookie is SameSite=Lax and there is no CORS, so another site can't read the answer.</summary>
+    [HttpPost("session-token"), Authorize(AuthenticationSchemes = "Identity.Application")]
+    [ProducesResponseType<TokenResponse>(200), ProducesResponseType(401)]
+    public async Task<IActionResult> SessionToken()
+    {
+        var user = await users.GetUserAsync(User);
+        if (user is null) return Unauthorized401("Not signed in");
+        var principal = await signIn.CreateUserPrincipalAsync(user);
+        return Ok(new TokenResponse(tokens.Create(principal), "Bearer", (int)TokenService.Lifetime.TotalSeconds));
+    }
+
     /// <summary>Who am I (works with cookie or Bearer).</summary>
     [HttpGet("me"), Authorize]
     public IActionResult Me() => Ok(new
