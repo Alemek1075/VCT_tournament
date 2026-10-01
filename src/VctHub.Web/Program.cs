@@ -46,6 +46,8 @@ else
 builder.Services.AddHttpClient<TelegramClient>(c => c.Timeout = TimeSpan.FromSeconds(40));
 builder.Services.AddSingleton<TelegramBot>();
 builder.Services.AddHostedService<MessagingWorker>();
+builder.Services.AddHttpClient<HubSpotClient>(c => c.Timeout = TimeSpan.FromSeconds(15));
+builder.Services.AddHostedService<CrmWorker>();
 builder.Services.AddSingleton<SearchService>();
 builder.Services.AddSingleton<SearchIndexer>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<SearchIndexer>());

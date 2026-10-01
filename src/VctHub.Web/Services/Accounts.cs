@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using VctHub.Web.Data;
+using VctHub.Web.Messaging;
 using VctHub.Web.Models;
 
 namespace VctHub.Web.Services;
@@ -33,7 +34,7 @@ public class AppClaimsFactory(UserManager<AppUser> users, RoleManager<IdentityRo
     }
 }
 
-public class AccountService(AppDbContext db, UserManager<AppUser> users, IConfiguration config)
+public class AccountService(AppDbContext db, UserManager<AppUser> users, IConfiguration config, IMessageBus bus, ILogger<AccountService> log)
 {
     /// <summary>New user: joins a workspace by invite code, otherwise gets a fresh one of their own.</summary>
     public async Task<(AppUser? User, IEnumerable<string> Errors)> CreateAsync(
@@ -52,6 +53,10 @@ public class AccountService(AppDbContext db, UserManager<AppUser> users, IConfig
         if (!result.Succeeded) return (null, result.Errors.Select(e => e.Description));
 
         if (IsAdminEmail(email)) await users.AddToRoleAsync(user, Roles.Admin);
+
+        // B3: the CRM hears about it through the queue; a broker hiccup must not break sign-up
+        try { await bus.PublishAsync("crm.signup", new UserSignedUp(email, displayName, tenant.Name, password == null ? "google" : "password", DateTime.UtcNow)); }
+        catch (Exception e) { log.LogWarning(e, "Could not queue CRM sign-up event for {Email}", email); }
         return (user, []);
     }
 
