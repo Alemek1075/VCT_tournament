@@ -1,0 +1,52 @@
+@model VctHub.Web.Controllers.PickemController.ChainConfig
+@section Head {
+<style>
+    .pk-shell { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; }
+    .pk-row { display: grid; grid-template-columns: 1fr 190px; gap: 1rem; align-items: center; padding: .8rem 1rem; border-bottom: 1px solid var(--line); }
+    .pk-teams { display: flex; align-items: center; gap: .6rem; font-weight: 600; flex-wrap: wrap; }
+    .pk-teams img { width: 26px; height: 26px; object-fit: contain; }
+    .pk-bar { display: flex; height: 6px; background: var(--ink-3); margin-top: .45rem; }
+    .pk-bar span { background: var(--red); }
+    .pk-actions { display: flex; gap: .4rem; justify-content: flex-end; flex-wrap: wrap; }
+    .pk-actions .btn.on { background: var(--red); color: #fff; border-color: var(--red); }
+    .pk-wallet code { word-break: break-all; }
+    @@media (max-width: 900px) { .pk-shell { grid-template-columns: 1fr; } .pk-row { grid-template-columns: 1fr; } .pk-actions { justify-content: flex-start; } }
+</style>
+}
+<div class="container-xl">
+    <div class="page-head">
+        <div class="kicker">On-chain · @Model.ChainName · no real money</div>
+        <h1>Pick'em</h1>
+        <p class="muted mb-0">Pick the winner before the match starts. Picks live in a Solidity smart contract; a correct pick is one point once the result is posted on chain.</p>
+    </div>
+
+    <div class="pk-shell">
+        <section class="panel p-0" id="pk-list"><p class="muted p-3 m-0" id="pk-status">Reading the contract…</p></section>
+
+        <aside>
+            <div class="panel pk-wallet">
+                <h2 class="fs-5">Wallet</h2>
+                <div id="pk-account" class="muted small mb-2">Not connected. You can look around without one.</div>
+                <button class="btn btn-red w-100" id="pk-connect">Connect MetaMask</button>
+                <p class="note small mt-3 mb-0" id="pk-msg" hidden></p>
+            </div>
+            <div class="panel mt-3">
+                <h2 class="fs-5">Leaderboard</h2>
+                <table class="table-dark w-100 small"><tbody id="pk-board"><tr><td class="muted">No settled picks yet.</td></tr></tbody></table>
+            </div>
+            <p class="muted small mt-3">
+                Contract:
+                @if (Model.Address is null) { <span>not deployed here yet</span> }
+                else if (Model.Explorer is not null) { <a href="@Model.Explorer/address/@Model.Address" target="_blank" rel="noopener"><code>@Model.Address</code></a> }
+                else { <code>@Model.Address</code> }
+                <br />Chain id @Model.ChainId
+            </p>
+        </aside>
+    </div>
+</div>
+
+<script type="application/json" id="pickem-config">@Json.Serialize(Model)</script>
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/web3@4.16.0/dist/web3.min.js"></script>
+<script src="~/js/pickem.js" asp-append-version="true"></script>
+}
