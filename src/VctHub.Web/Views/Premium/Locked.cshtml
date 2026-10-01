@@ -1,8 +1,33 @@
+@{ var name = User.FindFirst("tenant_name")?.Value; }
 <div class="container-xl py-5">
-    <div class="plan-card" style="max-width:560px">
-        <div class="kicker">Premium feature</div>
-        <h1>Premium analytics</h1>
-        <p class="muted">Breakout players, the most consistent performers, head-to-head comparison and CSV export. Your workspace is on the Free plan.</p>
-        <a class="btn btn-red" asp-controller="Account" asp-action="Workspace">Upgrade the workspace</a>
+    <div class="row g-4 align-items-start">
+        <div class="col-lg-6">
+            <div class="plan-card">
+                <div class="kicker">Premium feature</div>
+                <h1>Premium analytics</h1>
+                <p class="muted">Breakout players, the most consistent performers, head-to-head comparison and CSV export. Your workspace is on the Free plan.</p>
+                <a class="btn btn-red" asp-controller="Account" asp-action="Workspace">Upgrade the workspace</a>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <form class="plan-card" method="post" asp-action="Lead">
+                <div class="kicker">Team plan</div>
+                <h2 class="fs-3">Need it for a whole roster?</h2>
+                <p class="muted small">Tell us about the team. The request goes straight into our CRM and we answer by email.</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-8">
+                        <label class="form-label" for="Company">Team or org</label>
+                        <input class="form-control" id="Company" name="Company" maxlength="80" value="@name" />
+                    </div>
+                    <div class="col-4">
+                        <label class="form-label" for="Seats">Seats</label>
+                        <input class="form-control" id="Seats" name="Seats" type="number" min="2" max="500" value="5" />
+                    </div>
+                </div>
+                <label class="form-label" for="Message">What do you need?</label>
+                <textarea class="form-control mb-3" id="Message" name="Message" rows="3" maxlength="1000" placeholder="Scouting for our academy team, CSV exports every week…"></textarea>
+                <button class="btn btn-ghost btn-frame w-100" data-track="plan_lead">Send request</button>
+            </form>
+        </div>
     </div>
 </div>

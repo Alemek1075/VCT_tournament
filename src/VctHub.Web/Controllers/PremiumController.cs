@@ -4,18 +4,28 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.FeatureManagement;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 using VctHub.Web.Data;
+using VctHub.Web.Messaging;
 using VctHub.Web.Services;
 
 namespace VctHub.Web.Controllers;
 
 public record BreakoutRow(int Id, string Nickname, string? Team, string? Photo, decimal From, decimal To, string FromEvent, string ToEvent);
 public record ConsistencyRow(int Id, string Nickname, string? Team, decimal Avg, double StdDev, int Events);
+public class LeadInput
+{
+    [StringLength(80)] public string? Company { get; set; }
+    [Range(2, 500)] public int Seats { get; set; } = 5;
+    [StringLength(1000)] public string? Message { get; set; }
+}
+
 public record PremiumVm(List<BreakoutRow> Breakouts, List<ConsistencyRow> Consistent, bool CanExport);
 
 /// <summary>B6: the "special" page. Only workspaces on the Premium plan see it (feature flag PremiumStats).</summary>
 [Authorize, Route("premium")]
-public class PremiumController(AppDbContext db, IFeatureManager features) : Controller
+public class PremiumController(AppDbContext db, IFeatureManager features, IMessageBus bus) : Controller
 {
     [HttpGet("")]
     public async Task<IActionResult> Index()
@@ -45,6 +55,18 @@ public class PremiumController(AppDbContext db, IFeatureManager features) : Cont
             .Where(c => c.Avg >= 1.0m).OrderBy(c => c.StdDev).Take(10).ToList();
 
         return View(new PremiumVm(breakouts, consistent, await features.IsEnabledAsync(Features.CsvExport)));
+    }
+
+    /// <summary>B3: "talk to us about the Team plan". Goes to the CRM as a lead, through the queue.</summary>
+    [HttpPost("lead"), ValidateAntiForgeryToken]
+    public async Task<IActionResult> Lead(LeadInput input)
+    {
+        if (!ModelState.IsValid) { TempData["Flash"] = "Seats must be between 2 and 500."; return RedirectToAction(nameof(Index)); }
+        var email = User.FindFirstValue(ClaimTypes.Email) ?? User.Identity!.Name!;
+        await bus.PublishAsync("crm.lead", new PlanLead(email, User.FindFirstValue("display_name") ?? email,
+            User.FindFirstValue("tenant_name") ?? "", input.Company?.Trim() ?? "", input.Seats, input.Message?.Trim() ?? "", DateTime.UtcNow));
+        TempData["Flash"] = "Thanks! The request is in our CRM, we'll write to " + email + ".";
+        return RedirectToAction(nameof(Index));
     }
 
     /// <summary>All player season stats as CSV (feature flag CsvExport).</summary>
