@@ -29,7 +29,7 @@
         @foreach (var t in Model.Items)
         {
             <div class="col-sm-6 col-lg-4 col-xl-3">
-                <a class="team-card" href="/team/@t.Slug">
+                <a class="team-card" href="/team/@t.Slug" data-tag="@t.Tag">
                     <img class="logo-md" src="@t.LogoUrl" alt="@t.Name logo" loading="lazy" />
                     <div class="min-w-0">
                         <div class="name">@t.Name</div>
