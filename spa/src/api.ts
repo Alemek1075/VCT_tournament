@@ -65,4 +65,6 @@ export const Api = {
   login: (email: string, password: string) =>
     api<{ accessToken: string }>('/api/auth/token', { method: 'POST', body: JSON.stringify({ email, password }) }),
   me: () => api<Me>('/api/auth/me'),
+  // after Google sign-in on the server the browser holds a cookie; trade it for a JWT
+  sessionToken: () => api<{ accessToken: string }>('/api/auth/session-token', { method: 'POST' }),
 };
