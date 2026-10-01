@@ -106,8 +106,21 @@ public class SearchService(IServiceScopeFactory scopes, IConfiguration config, I
     {
         if (es == null) return;
         var docs = await BuildDocsAsync(ct);
-        await es.Indices.DeleteAsync(Index, ct);
-        var created = await es.Indices.CreateAsync<SearchDoc>(Index, c => c
+        // Never drop the live index: searches made during a reindex would hit "no shards" and fall
+        // back to Postgres. Create it once, then overwrite docs by id and delete the ones that are gone.
+        var exists = await es.Indices.ExistsAsync(Index, ct);
+        if (!exists.Exists) await CreateIndexAsync(ct);
+        var bulk = await es.BulkAsync(b => b.Index(Index).IndexMany(docs, (op, d) => op.Id(d.Id)).Refresh(Refresh.True), ct);
+        var keep = docs.Select(d => d.Id).ToList();
+        var stale = await es.DeleteByQueryAsync<SearchDoc>(Index, d => d
+            .Query(q => q.Bool(bq => bq.MustNot(mn => mn.Ids(i => i.Values(new Ids(keep))))))
+            .Refresh(true), ct);
+        log.LogInformation("Elasticsearch: indexed {N} docs, removed {Gone} (errors: {E})", docs.Count, stale.Deleted ?? 0, bulk.Errors);
+    }
+
+    async Task CreateIndexAsync(CancellationToken ct)
+    {
+        var created = await es!.Indices.CreateAsync<SearchDoc>(Index, c => c
             .Settings(s => s.Analysis(a => a
                 .Analyzers(an => an.Custom("folding", cu => cu.Tokenizer("standard").Filter(["lowercase", "asciifolding"])))))
             .Mappings(m => m.Properties(p => p
@@ -119,9 +132,7 @@ public class SearchService(IServiceScopeFactory scopes, IConfiguration config, I
                 .DoubleNumber(n => n.Boost)
                 .Keyword(k => k.Url, k => k.Index(false))
                 .Keyword(k => k.Image, k => k.Index(false)))), ct);
-        if (!created.IsValidResponse) { log.LogWarning("Index create failed: {E}", created.DebugInformation); return; }
-        var bulk = await es.BulkAsync(b => b.Index(Index).IndexMany(docs, (op, d) => op.Id(d.Id)).Refresh(Refresh.True), ct);
-        log.LogInformation("Elasticsearch: indexed {N} docs (errors: {E})", docs.Count, bulk.Errors);
+        if (!created.IsValidResponse) log.LogWarning("Index create failed: {E}", created.DebugInformation);
     }
 
     async Task<List<SearchDoc>> BuildDocsAsync(CancellationToken ct)
