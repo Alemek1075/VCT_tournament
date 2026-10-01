@@ -32,3 +32,4 @@ e2e/report/
 e2e/test-results/
 contracts/artifacts/
 contracts/cache/
+contracts/deployments/localhost.json
