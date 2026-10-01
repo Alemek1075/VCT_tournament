@@ -95,6 +95,15 @@ public class AccountController(
         return Challenge(props, provider);
     }
 
+    /// <summary>GET entry for Google sign-in, used by the React SPA (it has no antiforgery token to post).</summary>
+    [HttpGet("google")]
+    public async Task<IActionResult> Google(string? returnUrl)
+    {
+        if (!await GoogleEnabled()) return RedirectToAction(nameof(Login), new { returnUrl });
+        var redirect = Url.Action(nameof(ExternalCallback), new { returnUrl = Url.IsLocalUrl(returnUrl) ? returnUrl : null });
+        return Challenge(signIn.ConfigureExternalAuthenticationProperties("Google", redirect), "Google");
+    }
+
     [HttpGet("external-callback")]
     public async Task<IActionResult> ExternalCallback(string? returnUrl, string? remoteError)
     {
