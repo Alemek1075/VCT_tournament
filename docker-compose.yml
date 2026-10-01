@@ -9,6 +9,8 @@ services:
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       MSAL_CLIENT_ID: ${MSAL_CLIENT_ID:-}
+      PICKEM_ADDRESS: ${PICKEM_ADDRESS:-}
+      PICKEM_CHAIN_ID: ${PICKEM_CHAIN_ID:-31337}
       REDIS_URL: redis://redis:6379
       ELASTIC_URL: http://elastic:9200
       RABBITMQ_URL: amqp://vct:vct@rabbitmq:5672
