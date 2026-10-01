@@ -15,7 +15,7 @@ coverage*/
 
 # node
 node_modules/
-dist/
+spa/dist/
 .vite/
 playwright-report/
 test-results/
@@ -33,3 +33,11 @@ e2e/test-results/
 contracts/artifacts/
 contracts/cache/
 contracts/deployments/localhost.json
+# client libs: keep only the files the layout loads
+src/VctHub.Web/wwwroot/lib/**/dist/**
+!src/VctHub.Web/wwwroot/lib/**/dist/**/
+!src/VctHub.Web/wwwroot/lib/bootstrap/dist/css/bootstrap.min.css
+!src/VctHub.Web/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.min.js
+!src/VctHub.Web/wwwroot/lib/jquery/dist/jquery.min.js
+!src/VctHub.Web/wwwroot/lib/jquery-validation/dist/jquery.validate.min.js
+!src/VctHub.Web/wwwroot/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js
