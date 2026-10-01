@@ -1,5 +1,5 @@
-import { useEffect, useState, type FormEvent } from 'react'
-import { HashRouter, Link, NavLink, Route, Routes, useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type PointerEvent, type ReactNode } from 'react'
+import { HashRouter, Link, NavLink, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { Api, ApiError, img, type Match, type Page, type Player, type Region, type Team, type TeamInput } from './api'
 import { AuthProvider, useAuth } from './auth'
 import { MicrosoftPanel } from './msal'
@@ -10,6 +10,7 @@ export default function App() {
       <HashRouter>
         <Header />
         <main className="wrap">
+          <PageFade>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/teams" element={<Teams />} />
@@ -21,6 +22,7 @@ export default function App() {
             <Route path="/microsoft" element={<MicrosoftPanel />} />
             <Route path="*" element={<p className="muted">Not found. <Link to="/">Home</Link></p>} />
           </Routes>
+          </PageFade>
         </main>
         <footer className="wrap foot muted">
           React SPA over the VCT Hub REST API · <a href="/">server-rendered site</a> · <a href="/swagger">API docs</a>
@@ -50,6 +52,44 @@ function Header() {
     </header>
   )
 }
+
+/** Re-mounts on every route change so the page plays its enter animation. */
+function PageFade({ children }: { children: ReactNode }) {
+  const { pathname } = useLocation()
+  return <div key={pathname} className="page">{children}</div>
+}
+
+/** Filter chips with one red pill that glides to the selected chip. */
+function Chips<T extends string>({ options, value, onChange, label = o => o }: { options: readonly T[], value: T, onChange: (v: T) => void, label?: (o: T) => string }) {
+  const box = useRef<HTMLDivElement>(null)
+  const [pill, setPill] = useState<{ x: number, y: number, w: number, h: number } | null>(null)
+  useLayoutEffect(() => {
+    const measure = () => {
+      const on = box.current?.querySelector<HTMLElement>('.chip.on')
+      setPill(on ? { x: on.offsetLeft, y: on.offsetTop, w: on.offsetWidth, h: on.offsetHeight } : null)
+    }
+    measure()
+    addEventListener('resize', measure)
+    return () => removeEventListener('resize', measure)
+  }, [value, options.length])
+  return (
+    <div className={pill ? 'chips measured' : 'chips'} ref={box}>
+      {pill && <span className="pill" style={{ transform: `translate(${pill.x}px, ${pill.y}px)`, width: pill.w, height: pill.h }} />}
+      {options.map(o => <button key={o} className={o === value ? 'chip on' : 'chip'} onClick={() => onChange(o)}>{label(o)}</button>)}
+    </div>
+  )
+}
+
+/** Moves the card spotlight to the cursor (CSS reads --mx / --my). */
+function spotlight(e: PointerEvent<HTMLElement>) {
+  const card = (e.target as HTMLElement).closest<HTMLElement>('.card')
+  if (!card) return
+  const r = card.getBoundingClientRect()
+  card.style.setProperty('--mx', `${e.clientX - r.left}px`)
+  card.style.setProperty('--my', `${e.clientY - r.top}px`)
+}
+
+const Skeleton = ({ n, kind }: { n: number, kind: 'row' | 'tile' }) => <>{Array.from({ length: n }, (_, i) => <div key={i} className={`skeleton ${kind}`} />)}</>
 
 /** Hook: one page of a list + "load more" through nextLink (B1). */
 function usePaged<T>(load: () => Promise<Page<T>>, deps: unknown[]) {
@@ -81,13 +121,11 @@ function Home() {
   return (
     <>
       <h1>Matches</h1>
-      <div className="chips">
-        {(['Live', 'Upcoming', 'Completed'] as const).map(s =>
-          <button key={s} className={s === status ? 'chip on' : 'chip'} onClick={() => setStatus(s)}>{s === 'Completed' ? 'Results' : s}</button>)}
-      </div>
+      <Chips options={['Live', 'Upcoming', 'Completed'] as const} value={status} onChange={setStatus} label={s => s === 'Completed' ? 'Results' : s} />
       <div className="list">
-        {items.map(m => (
-          <a key={m.id} className="match" href={`/Matches/Details/${m.id}`}>
+        {busy && items.length === 0 && <Skeleton n={6} kind="row" />}
+        {items.map((m, i) => (
+          <a key={m.id} className="match" href={`/Matches/Details/${m.id}`} style={{ '--i': i % 20 } as React.CSSProperties}>
             <span className="when">{new Date(m.scheduledAt).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
             <span className="t"><img src={img(m.teamA?.logoUrl)} alt="" />{m.teamA?.name}</span>
             <span className="score">{m.status === 'Upcoming' ? 'vs' : `${m.scoreA} : ${m.scoreB}`}</span>
@@ -119,16 +157,14 @@ function Teams() {
       </div>
       <div className="filters">
         <input placeholder="Search name or tag" value={q} onChange={e => setQ(e.target.value)} />
-        <div className="chips">
-          <button className={!region ? 'chip on' : 'chip'} onClick={() => setRegion('')}>All</button>
-          {regions.filter(r => r.code !== 'international').map(r =>
-            <button key={r.code} className={region === r.code ? 'chip on' : 'chip'} onClick={() => setRegion(r.code)}>{r.name}</button>)}
-        </div>
+        <Chips options={['', ...regions.filter(r => r.code !== 'international').map(r => r.code)]} value={region} onChange={setRegion}
+          label={c => regions.find(r => r.code === c)?.name ?? 'All'} />
       </div>
       {error && <p className="err">{error}</p>}
-      <div className="grid">
+      <div className="grid" onPointerMove={spotlight}>
+        {busy && items.length === 0 && <Skeleton n={8} kind="tile" />}
         {items.map(t => (
-          <Link key={t.id} to={`/teams/${t.id}`} className="card">
+          <Link key={t.id} to={`/teams/${t.id}`} className="card" data-tag={t.tag}>
             <img src={img(t.logoUrl)} alt="" />
             <div><b>{t.name}</b><div className="muted small">{t.tag} · {t.region}</div></div>
           </Link>
@@ -231,10 +267,7 @@ function Players() {
   return (
     <>
       <h1>Players</h1>
-      <div className="chips">
-        {['', 'Duelist', 'Initiator', 'Controller', 'Sentinel'].map(r =>
-          <button key={r} className={role === r ? 'chip on' : 'chip'} onClick={() => setRole(r)}>{r || 'All roles'}</button>)}
-      </div>
+      <Chips options={['', 'Duelist', 'Initiator', 'Controller', 'Sentinel']} value={role} onChange={setRole} label={r => r || 'All roles'} />
       <table>
         <thead><tr><th>#</th><th>Player</th><th>Team</th>{th('rating', 'Rating')}{th('acs', 'ACS')}{th('kd', 'K:D')}{th('adr', 'ADR')}</tr></thead>
         <tbody>{items.map((p, i) => (
