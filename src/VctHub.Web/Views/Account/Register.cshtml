@@ -1,14 +1,16 @@
 @model RegisterInput
 @{ ViewData["Title"] = "Create account"; }
-<div class="container-xl">
+<div class="auth-shell">
+    <partial name="_AuthAside" />
     <div class="auth-box">
         <div class="kicker">VCT Hub account</div>
         <h1>Create account</h1>
+        <p class="muted mb-4">Takes ten seconds with Google.</p>
         @if (ViewBag.Google == true)
         {
             <form method="post" asp-action="External" class="mb-3">
                 <input type="hidden" name="provider" value="Google" />
-                <button class="btn btn-google w-100" type="submit">Sign up with Google</button>
+                <partial name="_GoogleButton" model="@("Sign up with Google")" />
             </form>
             <div class="or"><span>or with email</span></div>
         }
@@ -40,7 +42,7 @@
                 </div>
                 <div class="muted small">A workspace keeps your strategy docs and boards private. Got an invite code from a teammate? Use it to join their workspace instead.</div>
             </div>
-            <button class="btn btn-red w-100">Create account</button>
+            <button class="btn btn-red btn-lg w-100">Create account</button>
         </form>
         <p class="muted mt-3">Already registered? <a asp-action="Login" class="text-danger">Sign in</a></p>
     </div>
