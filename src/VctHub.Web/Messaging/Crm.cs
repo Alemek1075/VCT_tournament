@@ -32,11 +32,11 @@ public class HubSpotClient(HttpClient http, IConfiguration config, ILogger<HubSp
             if (props.GetValueOrDefault("lifecyclestage") == "subscriber") body.properties.Remove("lifecyclestage");
             using var updated = await SendAsync(HttpMethod.Patch, $"/crm/v3/objects/contacts/{Uri.EscapeDataString(email)}?idProperty=email", body, ct);
             await EnsureOk(updated, "update", ct);
-            log.LogInformation("HubSpot: updated contact {Email}", email);
+            if (updated.IsSuccessStatusCode) log.LogInformation("HubSpot: updated contact {Email}", email);
             return;
         }
         await EnsureOk(created, "create", ct);
-        log.LogInformation("HubSpot: created contact {Email}", email);
+        if (created.IsSuccessStatusCode) log.LogInformation("HubSpot: created contact {Email}", email);
     }
 
     Task<HttpResponseMessage> SendAsync(HttpMethod method, string path, object body, CancellationToken ct)
@@ -46,10 +46,16 @@ public class HubSpotClient(HttpClient http, IConfiguration config, ILogger<HubSp
         return http.SendAsync(req, ct);
     }
 
-    static async Task EnsureOk(HttpResponseMessage res, string what, CancellationToken ct)
+    async Task EnsureOk(HttpResponseMessage res, string what, CancellationToken ct)
     {
         if (res.IsSuccessStatusCode) return;
         var text = await res.Content.ReadAsStringAsync(ct);
+        // 400 = HubSpot rejects the data itself (e.g. an invalid email); retrying won't help, so log and drop
+        if (res.StatusCode == HttpStatusCode.BadRequest)
+        {
+            log.LogWarning("HubSpot {What} rejected: {Body}", what, text[..Math.Min(text.Length, 300)]);
+            return;
+        }
         throw new HttpRequestException($"HubSpot {what} failed: {(int)res.StatusCode} {text[..Math.Min(text.Length, 300)]}", null, res.StatusCode);
     }
 }
