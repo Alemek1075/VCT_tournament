@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en" data-bs-theme="dark" class="no-js">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,7 +8,8 @@
     @RenderSection("Meta", required: false)
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@800;900&family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>document.documentElement.classList.replace('no-js', 'js')</script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     @RenderSection("Head", required: false)
@@ -31,14 +32,22 @@
                 <li><a class="nav-link" asp-controller="Teams" asp-action="Index">Teams</a></li>
                 <li><a class="nav-link" asp-controller="Players" asp-action="Index">Players</a></li>
                 <li><a class="nav-link" asp-controller="Map" asp-action="Index">Map</a></li>
-                <li><a class="nav-link" href="@(User.Identity?.IsAuthenticated == true ? "/docs" : "/docs/local")">Docs</a></li>
-                <li><a class="nav-link" href="/board">Board</a></li>
-                <li><a class="nav-link" href="/aim">Aim</a></li>
-                <li><a class="nav-link" href="/agent">AI</a></li>
+                <li class="dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">More</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/pickem"><b>Pick'em</b><span>Predict winners on chain</span></a></li>
+                        <li><a class="dropdown-item" href="/aim"><b>Aim</b><span>Reaction trainer and ladder</span></a></li>
+                        <li><a class="dropdown-item" href="/board"><b>Board</b><span>Shared strat whiteboard</span></a></li>
+                        <li><a class="dropdown-item" href="@(User.Identity?.IsAuthenticated == true ? "/docs" : "/docs/local")"><b>Docs</b><span>Notes with live editing</span></a></li>
+                        <li><a class="dropdown-item" href="/agent"><b>AI analyst</b><span>Ask about any team or match</span></a></li>
+                        <li><a class="dropdown-item" href="/spa/"><b>React app</b><span>The SPA version of the hub</span></a></li>
+                    </ul>
+                </li>
             </ul>
-            <form class="d-flex me-2" action="/search" role="search">
-                <input class="form-control form-control-sm" name="q" placeholder="Search…" aria-label="Search" style="width:170px" />
-            </form>
+            <a class="cmdk-trigger me-2" href="/search" data-cmdk aria-label="Search (Ctrl+K)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                <span>Search</span><kbd>Ctrl K</kbd>
+            </a>
             @if (User.Identity?.IsAuthenticated == true)
             {
                 <feature name="@Features.PremiumStats">
@@ -48,7 +57,7 @@
             }
             else
             {
-                <a class="btn btn-red btn-sm" href="/account/login">Sign in</a>
+                <a class="btn btn-red btn-sm" href="/account/login" data-magnetic>Sign in</a>
             }
             @await RenderSectionAsync("NavRight", required: false)
         </div>
@@ -58,13 +67,14 @@
 <main>
     @if (TempData["Flash"] is string flash)
     {
-        <div class="container-xl pt-3"><div class="flash">@flash</div></div>
+        <div class="toast-dock" aria-live="polite"><div class="flash" role="status"><span>@flash</span><button type="button" aria-label="Dismiss">&times;</button></div></div>
     }
     @RenderBody()
 </main>
 
 <footer class="site-footer">
     <div class="container-xl">
+        <p class="wordmark" aria-hidden="true">VCT Hub</p>
         <p>VCT Hub is a student project (KNU, Web-технології). Data: <a href="https://www.vlr.gg" rel="nofollow">vlr.gg</a>. <a href="/privacy">Privacy</a></p>
         <p class="legal">VCT Hub isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing Riot Games properties. Riot Games, VALORANT and all associated properties are trademarks or registered trademarks of Riot Games, Inc.</p>
     </div>
@@ -72,6 +82,15 @@
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<dialog class="cmdk" id="cmdk" aria-label="Search">
+    <div class="cmdk-head">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="cmdk-q" type="text" placeholder="Teams, players, events, pages…" autocomplete="off" role="combobox" aria-controls="cmdk-list" aria-expanded="true" />
+        <kbd>Esc</kbd>
+    </div>
+    <ul class="cmdk-list" id="cmdk-list" role="listbox"></ul>
+    <div class="cmdk-foot"><span>↑↓ move</span><span>Enter open</span><span class="ms-auto" id="cmdk-engine"></span></div>
+</dialog>
 <script src="~/js/site.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
