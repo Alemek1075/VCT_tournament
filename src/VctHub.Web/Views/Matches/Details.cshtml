@@ -9,12 +9,12 @@
     <div class="page-head text-center">
         <div class="kicker"><a asp-controller="Tournaments" asp-action="Details" asp-route-id="@Model.TournamentId">@Model.Tournament?.Name</a> · @Model.Series</div>
         <div class="d-flex justify-content-center align-items-center gap-4 gap-md-5 my-4 flex-wrap">
-            <a href="/team/@Model.TeamA?.Slug" class="text-center">
+            <a href="/team/@Model.TeamA?.Slug" class="text-center vs-team">
                 <img src="@Model.TeamA?.LogoUrl" alt="" style="width:110px;height:110px;object-fit:contain" />
                 <h2 class="mt-2">@Model.TeamA?.Name</h2>
             </a>
             <div>
-                <div class="display fw-bold" style="font-size:4.5rem;line-height:1" id="score">
+                <div class="big-score" id="score">
                     @if (Model.Status == MatchStatus.Upcoming) { <span class="muted">VS</span> }
                     else { <span data-score-a>@Model.ScoreA</span><span class="muted"> : </span><span data-score-b>@Model.ScoreB</span> }
                 </div>
@@ -28,7 +28,7 @@
                     <div class="muted" id="live-event"></div>
                 </div>
             </div>
-            <a href="/team/@Model.TeamB?.Slug" class="text-center">
+            <a href="/team/@Model.TeamB?.Slug" class="text-center vs-team">
                 <img src="@Model.TeamB?.LogoUrl" alt="" style="width:110px;height:110px;object-fit:contain" />
                 <h2 class="mt-2">@Model.TeamB?.Name</h2>
             </a>

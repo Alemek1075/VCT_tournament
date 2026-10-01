@@ -1,23 +1,55 @@
 @model HomeVm
 @{ ViewData["Title"] = null; }
 
+@{ var next = Model.Upcoming.FirstOrDefault(); }
 <section class="hero">
+    <div class="hero-slash" data-word="@(Model.Current?.Name.Split(' ').LastOrDefault() ?? "VCT")" aria-hidden="true"></div>
     <div class="container-xl">
-        <div class="kicker">Valorant Champions Tour · 2026 season</div>
-        @if (Model.Current is { } cur)
-        {
-            <h1>@cur.Name</h1>
-            <p class="lead muted">
-                @cur.StartDate.ToString("MMM d") – @cur.EndDate.ToString("MMM d, yyyy") · @cur.Venue
-                @if (cur.PrizePool > 0) { <text> · $@cur.PrizePool.Value.ToString("N0")</text> }
-            </p>
-            <a class="btn btn-red" asp-controller="Tournaments" asp-action="Details" asp-route-id="@cur.Id">Bracket &amp; results</a>
-            <a class="btn btn-ghost ms-2" asp-controller="Matches" asp-action="Index" asp-route-status="Upcoming">Schedule</a>
-        }
-        else
-        {
-            <h1>VCT Hub</h1>
-        }
+        <div class="row g-5 align-items-end">
+            <div class="col-lg-8">
+                <div class="kicker">Valorant Champions Tour · 2026 season</div>
+                @if (Model.Current is { } cur)
+                {
+                    var words = cur.Name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    <h1 class="hero-title" aria-label="@cur.Name">
+                        @for (var w = 0; w < words.Length; w++)
+                        {
+                            <span class="w" aria-hidden="true"><span style="--i:@w">@words[w]</span></span>
+                            @(" ")
+                        }
+                    </h1>
+                    <p class="lead muted">
+                        @cur.StartDate.ToString("MMM d") – @cur.EndDate.ToString("MMM d, yyyy") · @cur.Venue
+                        @if (cur.PrizePool > 0) { <text> · $@cur.PrizePool.Value.ToString("N0") prize pool</text> }
+                    </p>
+                    <div class="cta mt-4">
+                        <a class="btn btn-red btn-lg" data-magnetic asp-controller="Tournaments" asp-action="Details" asp-route-id="@cur.Id">Bracket &amp; results</a>
+                        <a class="btn btn-ghost btn-lg btn-frame" asp-controller="Matches" asp-action="Index" asp-route-status="Upcoming">Schedule</a>
+                    </div>
+                }
+                else
+                {
+                    <h1 class="hero-title">VCT Hub</h1>
+                }
+            </div>
+            @if (next is not null)
+            {
+                <div class="col-lg-4">
+                    <a class="next-up" asp-controller="Matches" asp-action="Details" asp-route-id="@next.Id">
+                        <div class="kicker">Next match</div>
+                        <div class="vs">
+                            <div><img src="@next.TeamA?.LogoUrl" alt="" /><b>@(next.TeamA?.Tag ?? next.TeamA?.Name)</b></div>
+                            <i>VS</i>
+                            <div><img src="@next.TeamB?.LogoUrl" alt="" /><b>@(next.TeamB?.Tag ?? next.TeamB?.Name)</b></div>
+                        </div>
+                        <div class="countdown" data-countdown="@next.ScheduledAt.ToUniversalTime().ToString("o")">
+                            <span><b>--</b><small>@next.ScheduledAt.ToString("MMM d")</small></span>
+                        </div>
+                        <div class="muted small text-center mt-2">@next.Series · Bo@(next.BestOf)</div>
+                    </a>
+                </div>
+            }
+        </div>
     </div>
 </section>
 
@@ -26,35 +58,35 @@
         <div class="col-lg-8">
             @if (Model.Live.Count > 0)
             {
-                <h2 class="h4 mt-2"><span class="tag live">Live</span> Now playing</h2>
+                <div class="section-title"><span class="tag live">Live</span><h2>Now playing</h2><a href="/Live">Live center <span>→</span></a></div>
                 <div class="panel mb-4">
                     @foreach (var m in Model.Live) { <partial name="_MatchRow" model="m" /> }
                 </div>
             }
-            <h2 class="h4 mt-2">Upcoming</h2>
+            <div class="section-title"><h2>Upcoming</h2><a asp-controller="Matches" asp-action="Index" asp-route-status="Upcoming">Full schedule <span>→</span></a></div>
             <div class="panel mb-4">
                 @foreach (var m in Model.Upcoming) { <partial name="_MatchRow" model="m" /> }
                 @if (Model.Upcoming.Count == 0) { <p class="p-3 muted m-0">Nothing scheduled.</p> }
             </div>
-            <h2 class="h4">Latest results</h2>
+            <div class="section-title"><h2>Latest results</h2><a asp-controller="Matches" asp-action="Index" asp-route-status="Completed">All results <span>→</span></a></div>
             <div class="panel">
                 @foreach (var m in Model.Results) { <partial name="_MatchRow" model="m" /> }
             </div>
         </div>
         <aside class="col-lg-4">
-            <h2 class="h4 mt-2">Top rated players</h2>
+            <div class="section-title"><h2>Top players</h2><a asp-controller="Players" asp-action="Index">Stats <span>→</span></a></div>
             <div class="panel">
                 @{ var i = 1; }
                 @foreach (var p in Model.TopPlayers)
                 {
                     <a class="d-flex align-items-center gap-3 p-3 border-bottom" asp-controller="Players" asp-action="Details" asp-route-id="@p.Id">
-                        <span class="display fs-3 fw-bold text-danger" style="width:1.5rem">@(i++)</span>
+                        <span class="rank-no">@(i++)</span>
                         <img class="avatar" src="@(p.PhotoUrl ?? p.Team?.LogoUrl)" alt="" loading="lazy" />
                         <span class="flex-grow-1">
                             <strong>@p.Nickname</strong><br />
                             <span class="muted small">@p.Team?.Name · @p.Role</span>
                         </span>
-                        <span class="text-end"><strong>@p.Rating</strong><br /><span class="muted small">rating</span></span>
+                        <span class="text-end"><strong class="num fs-5" data-count="@p.Rating.ToString(System.Globalization.CultureInfo.InvariantCulture)">@p.Rating</strong><br /><span class="muted small">rating</span></span>
                     </a>
                 }
             </div>
