@@ -82,8 +82,8 @@
         const ds = (p, color) => ({ label: p.nickname, data: keys.map(([k]) => Math.round(100 * p[k] / norm(k))), borderColor: color, backgroundColor: color + '33' });
         chart?.destroy();
         chart = new Chart(document.getElementById('h2h'), {
-            type: 'radar', data: { labels: keys.map(k => k[1]), datasets: [ds(a, '#ff4655'), ds(b, '#3fd1b4')] },
-            options: { scales: { r: { min: 40, max: 100, ticks: { display: false }, grid: { color: '#2a3a49' }, angleLines: { color: '#2a3a49' }, pointLabels: { color: '#ece8e1' } } }, plugins: { legend: { labels: { color: '#ece8e1' } } } },
+            type: 'radar', data: { labels: keys.map(k => k[1]), datasets: [ds(a, '#ff4655'), ds(b, '#60ddc0')] },
+            options: { scales: { r: { min: 40, max: 100, ticks: { display: false }, grid: { color: '#362e2e' }, angleLines: { color: '#362e2e' }, pointLabels: { color: '#f2eee7' } } }, plugins: { legend: { labels: { color: '#f2eee7' } } } },
         });
         const cell = (x, y) => x > y ? `<strong style="color:var(--teal)">${x}</strong>` : x;
         document.getElementById('h2h-table').innerHTML = `<tr><th></th><th class="text-end">${a.nickname}</th><th class="text-end">${b.nickname}</th></tr>` +

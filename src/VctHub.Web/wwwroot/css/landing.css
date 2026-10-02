@@ -37,7 +37,7 @@ body { padding-bottom: 64px; } /* room for the fixed contact bar */
 
 .landing-section { padding: 1rem 0 3rem; }
 .landing-section h2 { font-size: 2rem; margin-bottom: 1.2rem; }
-.landing-about { font-size: 1.15rem; line-height: 1.6; max-width: 65ch; color: #cfcac2; }
+.landing-about { font-size: 1.15rem; line-height: 1.6; max-width: 65ch; color: #d5d0ca; }
 
 .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 1rem; }
 .roster-card { background: var(--ink-2); border: 1px solid var(--line); color: var(--paper); transition: transform .2s, border-color .2s; display: block; }
@@ -48,7 +48,7 @@ body { padding-bottom: 64px; } /* room for the fixed contact bar */
 .roster-card { transition: transform .4s var(--ease), border-color .3s, opacity .4s var(--ease); }
 .roster-photo { position: relative; aspect-ratio: 1; overflow: hidden; background: linear-gradient(160deg, var(--ink-3), var(--ink)); }
 .roster-photo img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
-.roster-role { position: absolute; left: 0; bottom: 0; background: var(--red); color: #fff; font-family: "Barlow Condensed"; font-weight: 700; text-transform: uppercase; font-size: .8rem; padding: .15rem .6rem; }
+.roster-role { position: absolute; left: 0; bottom: 0; background: var(--red); color: var(--paper); font-family: "Barlow Condensed"; font-weight: 700; text-transform: uppercase; font-size: .8rem; padding: .15rem .6rem; }
 .roster-name { font-family: "Barlow Condensed"; font-weight: 800; font-size: 1.5rem; text-transform: uppercase; padding: .6rem .8rem 0; line-height: 1; }
 .roster-name small { color: var(--gold); font-size: .9rem; }
 .roster-real { color: var(--muted); font-size: .85rem; padding: .1rem .8rem .6rem; }

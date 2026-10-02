@@ -27,7 +27,7 @@ public partial class BoardHub : Hub
 {
     const int MaxItems = 3000;
     static readonly ConcurrentDictionary<string, BoardRoom> Rooms = new();
-    static readonly string[] Colors = ["#ff4655", "#3fd1b4", "#f2c14e", "#9d8cff", "#5ab0ff", "#ff8a3d", "#e56bff"];
+    static readonly string[] Colors = ["#ff4655", "#60ddc0", "#cfb473", "#9d8cff", "#5ab0ff", "#ff8a3d", "#e56bff"];
 
     string? RoomName => Context.Items["room"] as string;
     BoardRoom Room => Rooms[RoomName ?? throw new HubException("Join a room first")];

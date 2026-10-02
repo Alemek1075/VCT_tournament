@@ -1,6 +1,6 @@
 // VCT map: teams + venues, filters, season timeline, travel lines and small charts.
 (async function () {
-    const COLORS = { americas: '#ff4655', emea: '#3fd1b4', pacific: '#f2c14e', china: '#9d8cff', international: '#ece8e1' };
+    const COLORS = { americas: '#ff4655', emea: '#60ddc0', pacific: '#cfb473', china: '#9d8cff', international: '#f2eee7' };
     const NAMES = { americas: 'Americas', emea: 'EMEA', pacific: 'Pacific', china: 'China' };
     const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -63,11 +63,11 @@
         if (!el) return;
         new Chart(el, {
             type: 'doughnut',
-            data: { labels: ['Wins', 'Losses'], datasets: [{ data: [t.wins, t.losses], backgroundColor: ['#3fd1b4', '#2a3a49'], borderWidth: 0 }] },
+            data: { labels: ['Wins', 'Losses'], datasets: [{ data: [t.wins, t.losses], backgroundColor: ['#60ddc0', '#362e2e'], borderWidth: 0 }] },
             options: { responsive: false, cutout: '62%', plugins: { legend: { display: false }, tooltip: { enabled: true } }, animation: { duration: 400 } },
             plugins: [{ id: 'center', afterDraw(c) {
                 const { ctx, chartArea: a } = c; ctx.save();
-                ctx.fillStyle = '#ece8e1'; ctx.font = '700 16px "Barlow Condensed"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillStyle = '#f2eee7'; ctx.font = '700 16px "Barlow Condensed"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                 const pct = t.wins + t.losses ? Math.round(100 * t.wins / (t.wins + t.losses)) : 0;
                 ctx.fillText(pct + '%', (a.left + a.right) / 2, (a.top + a.bottom) / 2); ctx.restore();
             } }],
@@ -104,8 +104,8 @@
         data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 0 }] },
         options: {
             indexAxis: 'y', animation: { duration: 350 },
-            scales: { x: { min: 0, max: 100, ticks: { color: '#8b978f', callback: v => v + '%' }, grid: { color: '#2a3a49' } },
-                      y: { ticks: { color: '#ece8e1', font: { family: 'Barlow Condensed', size: 13, weight: 600 } }, grid: { display: false } } },
+            scales: { x: { min: 0, max: 100, ticks: { color: '#a49d97', callback: v => v + '%' }, grid: { color: '#362e2e' } },
+                      y: { ticks: { color: '#f2eee7', font: { family: 'Barlow Condensed', size: 13, weight: 600 } }, grid: { display: false } } },
             plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => ` ${c.raw}% series won` } } },
         },
     });
