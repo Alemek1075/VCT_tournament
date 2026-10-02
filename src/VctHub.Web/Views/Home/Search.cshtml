@@ -33,9 +33,11 @@
         history.replaceState(null, '', q ? `?q=${encodeURIComponent(q)}` : location.pathname);
         if (q.length < 2) { $res.innerHTML = ''; $meta.textContent = ''; return; }
         ctrl?.abort(); ctrl = new AbortController();
+        $res.innerHTML = '<div class="p-3"><div class="skeleton mb-2" style="height:44px"></div><div class="skeleton mb-2" style="height:44px"></div><div class="skeleton" style="height:44px"></div></div>';
         const url = `/api/search?q=${encodeURIComponent(q)}&limit=30${$type.value ? '&type=' + $type.value : ''}`;
-        const r = await fetch(url, { signal: ctrl.signal }).then(r => r.json()).catch(() => null);
-        if (!r) return;
+        const mine = ctrl;
+        const r = await fetch(url, { signal: mine.signal }).then(r => r.json()).catch(() => null);
+        if (!r) { if (!mine.signal.aborted) $res.innerHTML = '<p class="muted p-3 m-0">Search failed. Try again.</p>'; return; }
         track('search', { search_term: q, results: r.total, engine: r.engine });
         $meta.textContent = `${r.total} results · ${r.tookMs} ms · engine: ${r.engine}`;
         $res.innerHTML = r.hits.length ? r.hits.map(h => `
@@ -51,5 +53,5 @@
     run();
 })();
 </script>
-<style>mark { background: var(--red); color: #fff; padding: 0 .15em; }</style>
+<style>mark { background: var(--red); color: var(--paper); padding: 0 .15em; }</style>
 }
