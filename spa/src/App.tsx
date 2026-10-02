@@ -192,7 +192,12 @@ function TeamView() {
     Api.teamPlayers(+id!).then(setPlayers).catch(() => {})
   }, [id])
   if (error) return <p className="err">{error}</p>
-  if (!team) return <p className="muted">Loading…</p>
+  if (!team) return (
+    <div aria-busy="true" aria-label="Loading team">
+      <div className="team-head"><div className="skeleton" style={{ width: 120, height: 120 }} /><div className="skeleton" style={{ width: 320, height: 64 }} /></div>
+      <Skeleton n={5} kind="row" />
+    </div>
+  )
   const remove = async () => {
     if (!confirm(`Delete ${team.name}?`)) return
     try { await Api.deleteTeam(team.id); nav('/teams') } catch (e) { setError((e as ApiError).status === 409 ? 'This team still has matches.' : (e as Error).message) }
