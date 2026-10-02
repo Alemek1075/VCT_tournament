@@ -29,8 +29,11 @@
     const tool = { name: 'pen', color: '#ff4655', agent: null };
 
     function setMapBackground(id) {
-        $img.src = id.startsWith('data:') ? id : maps.find(m => m.uuid === id)?.displayIcon ?? '';
-        if (!id.startsWith('data:')) $map.value = id;
+        if (id?.startsWith('data:')) { $img.src = id; return; }
+        // unknown or empty id (new room, or valorant-api dropped that map): fall back to the first map
+        const map = maps.find(m => m.uuid === id) ?? maps[0];
+        $img.src = map?.displayIcon ?? '';
+        if (map) $map.value = map.uuid;
     }
 
     // ---------- drawing (coordinates are 0..1 so every screen size lines up)
@@ -64,9 +67,9 @@
         } else if (it.kind === 'agent') {
             const s = 0.045, img = agentImg[it.agent];
             ctx.beginPath(); ctx.arc(it.x, it.y, s / 2 + 0.004, 0, Math.PI * 2);
-            ctx.fillStyle = it.side === 'def' ? '#3fd1b4' : '#ff4655'; ctx.fill();
+            ctx.fillStyle = it.side === 'def' ? '#60ddc0' : '#ff4655'; ctx.fill();
             ctx.save(); ctx.beginPath(); ctx.arc(it.x, it.y, s / 2, 0, Math.PI * 2); ctx.clip();
-            ctx.fillStyle = '#0f1923'; ctx.fillRect(it.x - s / 2, it.y - s / 2, s, s);
+            ctx.fillStyle = '#0f0b0b'; ctx.fillRect(it.x - s / 2, it.y - s / 2, s, s);
             if (img?.complete) ctx.drawImage(img, it.x - s / 2, it.y - s / 2, s, s);
             ctx.restore();
         }
@@ -161,7 +164,7 @@
     document.getElementById('png').onclick = () => {
         const out = document.createElement('canvas'); out.width = out.height = 1024;
         const o = out.getContext('2d');
-        o.fillStyle = '#0f1923'; o.fillRect(0, 0, 1024, 1024);
+        o.fillStyle = '#0f0b0b'; o.fillRect(0, 0, 1024, 1024);
         try { o.drawImage($img, 0, 0, 1024, 1024); } catch { }
         o.drawImage($canvas, 0, 0, 1024, 1024);
         const a = document.createElement('a'); a.download = `strat-${cfg.room}.png`;
@@ -181,7 +184,7 @@
         const img = await new Promise(res => { const i = new Image(); i.onload = () => res(i); i.src = url; });
         const c = document.createElement('canvas'), size = 900, k = size / Math.max(img.width, img.height);
         c.width = c.height = size;
-        const cx = c.getContext('2d'); cx.fillStyle = '#0f1923'; cx.fillRect(0, 0, size, size);
+        const cx = c.getContext('2d'); cx.fillStyle = '#0f0b0b'; cx.fillRect(0, 0, size, size);
         cx.drawImage(img, (size - img.width * k) / 2, (size - img.height * k) / 2, img.width * k, img.height * k);
         const data = c.toDataURL('image/jpeg', 0.72);
         items = []; setMapBackground(data); dirty = true; send('SetMap', data);
@@ -208,11 +211,13 @@
     hub.on('peers', renderPeers);
     hub.on('signal', onSignal);
 
+    // names come from other people in the room, so never put them into HTML raw
+    const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     let peersList = [];
     function renderPeers(list) {
         peersList = list;
         document.getElementById('peers').innerHTML = list.map(p =>
-            `<div class="peer-row" style="--c:${p.color}"><span class="peer-dot"></span>${p.name}${p.id === me?.id ? ' (you)' : ''}${p.voice ? ' <span id="spk-' + p.id + '">🎙</span>' : ''}</div>`).join('');
+            `<div class="peer-row" style="--c:${p.color}"><span class="peer-dot"></span>${esc(p.name)}${p.id === me?.id ? ' (you)' : ''}${p.voice ? ' <span id="spk-' + p.id + '">🎙</span>' : ''}</div>`).join('');
         document.getElementById('voice-peers').textContent = list.filter(p => p.voice).length ? `${list.filter(p => p.voice).length} in voice` : 'nobody in voice';
         if (voiceOn) list.filter(p => p.voice && p.id !== me.id && !pcs.has(p.id) && p.id < me.id).forEach(p => call(p.id));
     }
@@ -221,7 +226,7 @@
         let el = document.getElementById('c-' + from);
         if (!el) {
             el = document.createElement('div'); el.className = 'cursor'; el.id = 'c-' + from;
-            el.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 1l5 14 2-6 6-2z" fill="${p.color}" stroke="#0f1923"/></svg><span>${p.name}</span>`;
+            el.innerHTML = `<svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 1l5 14 2-6 6-2z" fill="${p.color}" stroke="#0f0b0b"/></svg><span>${esc(p.name)}</span>`;
             el.style.setProperty('--c', p.color); $cursors.appendChild(el);
         }
         el.style.left = x * 100 + '%'; el.style.top = y * 100 + '%';
@@ -229,8 +234,12 @@
     let lastCursor = 0;
     function sendCursor(p) { const now = performance.now(); if (now - lastCursor > 50) { lastCursor = now; send('Cursor', p[0], p[1]); } }
 
-    let name = cfg.signedIn ? null : (localStorage.getItem('vct.board.name') || prompt('Your name on the board', 'Coach') || 'Guest');
-    if (name) try { localStorage.setItem('vct.board.name', name); } catch { }
+    // guests get a remembered random name instead of a blocking prompt()
+    let name = null;
+    if (!cfg.signedIn) {
+        try { name = localStorage.getItem('vct.board.name'); } catch { }
+        if (!name) { name = 'Guest ' + Math.floor(1000 + Math.random() * 9000); try { localStorage.setItem('vct.board.name', name); } catch { } }
+    }
     await hub.start();
     const joined = await hub.invoke('Join', cfg.room, name);
     me = joined.me; items = joined.items; setMapBackground(joined.map); renderPeers(joined.peers); dirty = true;
