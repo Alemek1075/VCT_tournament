@@ -2,26 +2,26 @@
 .site-footer { display: none; }
 .map-panel { padding: 1.4rem; overflow-y: auto; border-right: 1px solid var(--line); background: var(--ink); }
 .map-panel .kicker { color: var(--red); font-family: "Barlow Condensed"; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; }
-#map { height: 100%; background: #0b131b; }
+#map { height: 100%; background: #090706; }
 
 .chips { display: flex; flex-wrap: wrap; gap: .35rem; }
 .chip { border: 1px solid var(--line); background: transparent; color: var(--muted); padding: .2rem .7rem; font-family: "Barlow Condensed"; font-weight: 600; text-transform: uppercase; }
 .chip.on { color: var(--ink); border-color: transparent; }
 .chip.on[data-region="americas"] { background: #ff4655; }
-.chip.on[data-region="emea"] { background: #3fd1b4; }
-.chip.on[data-region="pacific"] { background: #f2c14e; }
+.chip.on[data-region="emea"] { background: #60ddc0; }
+.chip.on[data-region="pacific"] { background: #cfb473; }
 .chip.on[data-region="china"] { background: #9d8cff; }
 .chart-box { background: var(--ink-2); border: 1px solid var(--line); padding: .6rem; }
 
 /* markers */
-.team-pin { width: 38px; height: 38px; border-radius: 50%; background: #0f1923; border: 2px solid var(--c, #ff4655); display: grid; place-items: center; box-shadow: 0 2px 10px rgba(0,0,0,.6); transition: transform .15s; }
+.team-pin { width: 38px; height: 38px; border-radius: 50%; background: #0f0b0b; border: 2px solid var(--c, #ff4655); display: grid; place-items: center; box-shadow: 0 2px 10px rgba(0,0,0,.6); transition: transform .15s; }
 .team-pin img { width: 26px; height: 26px; object-fit: contain; }
 .team-pin:hover { transform: scale(1.15); }
 .venue-pin { width: 22px; height: 22px; background: var(--paper); clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%); opacity: .35; transition: opacity .3s, transform .3s; }
 .venue-pin.active { opacity: 1; background: var(--red); transform: scale(1.5); animation: venue-pulse 1.2s infinite; }
 @keyframes venue-pulse { 50% { transform: scale(1.8); } }
 
-.marker-cluster div { background: var(--red) !important; color: #fff; font-family: "Barlow Condensed"; font-weight: 700; }
+.marker-cluster div { background: var(--red) !important; color: var(--paper); font-family: "Barlow Condensed"; font-weight: 700; }
 .marker-cluster { background: rgba(255, 70, 85, .3) !important; }
 
 /* popups */
@@ -33,7 +33,7 @@
 .pop .muted { font-size: .8rem; }
 .pop a.btn { margin-top: .4rem; }
 .leaflet-container { font-family: "Barlow", sans-serif; }
-.leaflet-control-attribution { background: rgba(15, 25, 35, .8) !important; color: var(--muted) !important; }
+.leaflet-control-attribution { background: rgba(15, 11, 11, .8) !important; color: var(--muted) !important; }
 .leaflet-control-attribution a { color: var(--paper) !important; }
 
 @media (max-width: 860px) {

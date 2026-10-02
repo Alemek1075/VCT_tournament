@@ -83,7 +83,7 @@ class DocSession
 public class DocHub(DocSessions sessions) : Hub
 {
     static string Group(int id) => $"doc-{id}";
-    static readonly string[] Colors = ["#ff4655", "#3fd1b4", "#f2c14e", "#9d8cff", "#5ab0ff", "#ff8a3d"];
+    static readonly string[] Colors = ["#ff4655", "#60ddc0", "#cfb473", "#9d8cff", "#5ab0ff", "#ff8a3d"];
 
     int Tenant => int.Parse(Context.User!.FindFirstValue(HttpCurrentTenant.Claim)!);
 

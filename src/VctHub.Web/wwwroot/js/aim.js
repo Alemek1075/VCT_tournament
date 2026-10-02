@@ -104,8 +104,8 @@
             const k = t.life === Infinity ? Math.min(1, age * 6) : Math.max(.25, 1 - (now - t.born) / t.life);
             const r = t.r * k;
             ctx.beginPath(); ctx.arc(t.x, t.y, r, 0, Math.PI * 2); ctx.fillStyle = '#ff4655'; ctx.fill();
-            ctx.beginPath(); ctx.arc(t.x, t.y, r * .66, 0, Math.PI * 2); ctx.fillStyle = '#0f1923'; ctx.fill();
-            ctx.beginPath(); ctx.arc(t.x, t.y, r * .35, 0, Math.PI * 2); ctx.fillStyle = '#ece8e1'; ctx.fill();
+            ctx.beginPath(); ctx.arc(t.x, t.y, r * .66, 0, Math.PI * 2); ctx.fillStyle = '#0f0b0b'; ctx.fill();
+            ctx.beginPath(); ctx.arc(t.x, t.y, r * .35, 0, Math.PI * 2); ctx.fillStyle = '#f2eee7'; ctx.fill();
             t.hitR = r;
         }
         for (const p of game.particles) {
@@ -115,13 +115,13 @@
         game.particles = game.particles.filter(p => p.life > 0);
         ctx.font = '700 18px "Barlow Condensed"'; ctx.textAlign = 'center';
         for (const f of game.floaters) {
-            f.y -= .7; f.life -= .02; ctx.globalAlpha = Math.max(0, f.life); ctx.fillStyle = '#f2c14e'; ctx.fillText(f.text, f.x, f.y);
+            f.y -= .7; f.life -= .02; ctx.globalAlpha = Math.max(0, f.life); ctx.fillStyle = '#cfb473'; ctx.fillText(f.text, f.x, f.y);
         }
         game.floaters = game.floaters.filter(f => f.life > 0);
         ctx.globalAlpha = 1;
 
         // Valorant-style crosshair
-        ctx.strokeStyle = '#3fd1b4'; ctx.lineWidth = 2;
+        ctx.strokeStyle = '#60ddc0'; ctx.lineWidth = 2;
         const { x, y } = mouse;
         [[-10, 0, -4, 0], [4, 0, 10, 0], [0, -10, 0, -4], [0, 4, 0, 10]].forEach(([a, b, c, d]) => { ctx.beginPath(); ctx.moveTo(x + a, y + b); ctx.lineTo(x + c, y + d); ctx.stroke(); });
 

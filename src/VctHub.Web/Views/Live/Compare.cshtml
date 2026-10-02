@@ -67,11 +67,11 @@
     await calibrate();
 
     const T = [
-        { key: 'poll', name: 'Polling (2 s)', color: '#8b978f' },
-        { key: 'adaptive', name: 'Adaptive polling + ETag', color: '#f2c14e' },
+        { key: 'poll', name: 'Polling (2 s)', color: '#a49d97' },
+        { key: 'adaptive', name: 'Adaptive polling + ETag', color: '#cfb473' },
         { key: 'long', name: 'Long polling', color: '#9d8cff' },
         { key: 'sse', name: 'Server-Sent Events', color: '#5ab0ff' },
-        { key: 'ws', name: 'WebSocket (raw)', color: '#3fd1b4' },
+        { key: 'ws', name: 'WebSocket (raw)', color: '#60ddc0' },
         { key: 'signalr', name: 'SignalR', color: '#ff4655' },
     ];
     const stats = {};
@@ -170,7 +170,7 @@
     const bar = id => new Chart(document.getElementById(id), {
         type: 'bar',
         data: { labels: T.map(t => t.name.split(' (')[0]), datasets: [{ data: T.map(() => 0), backgroundColor: T.map(t => t.color), borderWidth: 0 }] },
-        options: { animation: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#8b978f', font: { size: 10 } } }, y: { ticks: { color: '#8b978f' }, grid: { color: '#2a3a49' } } } },
+        options: { animation: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#a49d97', font: { size: 10 } } }, y: { ticks: { color: '#a49d97' }, grid: { color: '#362e2e' } } } },
     });
     const charts = { req: bar('c-req'), bytes: bar('c-bytes'), lat: bar('c-lat') };
     const avg = a => a.length ? Math.round(a.reduce((x, y) => x + y, 0) / a.length) : 0;

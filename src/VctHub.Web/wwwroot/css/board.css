@@ -2,13 +2,13 @@
 .board-shell { display: grid; grid-template-columns: 270px 1fr; height: calc(100vh - 62px); }
 .board-tools { padding: 1.2rem; border-right: 1px solid var(--line); overflow-y: auto; }
 .board-tools .kicker { color: var(--red); font-family: "Barlow Condensed"; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: .6rem; word-break: break-all; }
-.board-stage { display: grid; place-items: center; padding: 1rem; background: radial-gradient(circle at 50% 40%, #16222e, #0b131b 70%); overflow: hidden; }
+.board-stage { display: grid; place-items: center; padding: 1rem; background: radial-gradient(circle at 50% 40%, #181413, #090706 70%); overflow: hidden; }
 .board-square { position: relative; width: min(100%, calc(100vh - 100px)); aspect-ratio: 1; }
 .board-square img, .board-square canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .board-square img { object-fit: contain; opacity: .9; user-select: none; -webkit-user-drag: none; }
 .board-square canvas { touch-action: none; cursor: crosshair; }
 .board-square.dragover { outline: 3px dashed var(--red); outline-offset: 6px; }
-.drop-hint { display: none; position: absolute; inset: 0; place-items: center; font-family: "Barlow Condensed"; font-size: 2rem; text-transform: uppercase; background: rgba(15,25,35,.7); pointer-events: none; }
+.drop-hint { display: none; position: absolute; inset: 0; place-items: center; font-family: "Barlow Condensed"; font-size: 2rem; text-transform: uppercase; background: rgba(15, 11, 11,.7); pointer-events: none; }
 .board-square.dragover .drop-hint { display: grid; }
 
 .tool-row { display: flex; gap: .35rem; flex-wrap: wrap; }
