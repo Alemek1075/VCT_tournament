@@ -336,7 +336,9 @@
 
     function showPeers(list) {
         const others = list.filter(p => p.connectionId !== me?.connectionId);
-        $peers.innerHTML = others.map(p => `<span class="peer" style="--peer:${p.color}" title="${p.name}">${p.name[0] ?? '?'}</span>`).join('')
+        // display names are typed by users: escape before they go into HTML
+        const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        $peers.innerHTML = others.map(p => `<span class="peer" style="--peer:${p.color}" title="${esc(p.name)}">${esc(p.name[0] ?? '?')}</span>`).join('')
             + (others.length ? `<span class="muted small ms-1">${others.length} other${others.length > 1 ? 's' : ''} here</span>` : '<span class="muted small">only you</span>');
         // drop cursors of people who left
         for (const r of $list.querySelectorAll('.blk[data-cursor]'))
